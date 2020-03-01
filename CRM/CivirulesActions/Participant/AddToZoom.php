@@ -85,7 +85,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
 			  'Zoom Response: @response',
 			  array(
-			  	'@response' => print_r($response, TRUE)
+			  	'@response' => print_r($response->json(), TRUE)
 			  ),
 			  WATCHDOG_INFO
 			);
