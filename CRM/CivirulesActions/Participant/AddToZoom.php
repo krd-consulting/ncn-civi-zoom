@@ -41,7 +41,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	 * @return array Retrieved contact info
 	 */
 	private function getContactData($id) {
-		$result = []
+		$result = [];
 
 		try {
 			$result = civicrm_api3('Contact', 'get', [
