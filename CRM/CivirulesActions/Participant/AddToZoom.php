@@ -1,7 +1,6 @@
 <?php
 
-use Zttp;
-use Lcobucci\JWT\Configuration;
+use Zttp\Zttp;
 
 class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
@@ -15,21 +14,34 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	public function processAction(CRM_Civirules_TriggerData_TriggerData $triggerData) {
 	  $contactId = $triggerData->getContactId();
 	  
-	  $data = $triggerData->getEntityData('Event');
+	  $event = $triggerData->getEntityData('Event');
 
-	  watchdog(
-		  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
-		  'custom data: @custom',
-		  array(
-		  	'@custom' => print_r($data ,TRUE)
-		  ),
-		  WATCHDOG_INFO
-		);
+	  $webinar = $this->getWebinarID($event['id']);
 
-	  //$webinarId = $triggerData->
+	  $participant = $this->getContactData($contactId);
 
-	  // get contact email, first_name, last_name, address, city, state/province, country, zip/postal_code
-	  //$contactInfo = $this->getContactData($contactId);
+	  $this->addParticipant($participant, $webinar);
+	}
+
+	/**
+	 * Get an event's webinar id
+	 * @param  int $event The event's id
+	 * @return string The event's webinar id
+	 */
+	private function getWebinarID($event) {
+		$result;
+
+		try {
+			$result = civicrm_api3('Event', 'get', [
+			  'sequential' => 1,
+			  'return' => ["custom_48"],
+			  'id' => $event,
+			])['values']['custom_48'];
+		} catch (Exception $e) {
+
+		}
+
+		return $result;
 	}
 
 	/**
@@ -48,7 +60,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'sequential' => 1,
 			  'return' => ["email", "first_name", "last_name", "street_address", "city", "state_province_name", "country", "postal_code"],
 			  'id' => "",
-			]);
+			])['values'];
 		} catch (Exception $e) {
 			watchdog(
 			  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
