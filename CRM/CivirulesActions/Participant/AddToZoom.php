@@ -81,7 +81,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		  'participant: @participant url: @url',
 		  array(
 		  	'@participant' => print_r($participant, TRUE),
-		  	'url' => $url
+		  	'@url' => $url
 		  ),
 		  WATCHDOG_INFO
 		);
