@@ -37,15 +37,15 @@ class ComposerStaticInit23355721932ce6944581513cf9e0072d
             'Psr\\Http\\Message\\' => 17,
             'PhpOption\\' => 10,
         ),
-        'L' => 
-        array (
-            'Lcobucci\\JWT\\' => 13,
-        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
+        ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
         ),
         'D' => 
         array (
@@ -82,10 +82,6 @@ class ComposerStaticInit23355721932ce6944581513cf9e0072d
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
-        'Lcobucci\\JWT\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
-        ),
         'GuzzleHttp\\Psr7\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
@@ -97,6 +93,10 @@ class ComposerStaticInit23355721932ce6944581513cf9e0072d
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'Dotenv\\' => 
         array (

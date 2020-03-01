@@ -1,26 +1,22 @@
 <?xml version="1.0"?>
 <extension key="ncn-civi-zoom" type="module">
   <file>ncn_civi_zoom</file>
-  <name>FIXME</name>
-  <description>FIXME</description>
-  <license>AGPL-3.0</license>
+  <name>NCN Civirules Actions for Zoom</name>
+  <description>This module provides Civirules Actions for NCN that integrate with Zoom.</description>
   <maintainer>
     <author>Rupert Amodia</author>
-    <email>rupertraphael@live.com</email>
+    <email>rupert@hellokrd.net</email>
   </maintainer>
-  <urls>
-    <url desc="Main Extension Page">http://FIXME</url>
-    <url desc="Documentation">http://FIXME</url>
-    <url desc="Support">http://FIXME</url>
-    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
-  </urls>
   <releaseDate>2020-02-29</releaseDate>
-  <version>1.0</version>
+  <version>0.1</version>
+  <requires>
+    <ext>org.civicoop.civirules</ext>
+  </requires>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>5.0</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments>Made for Nonprofit Centers Network, by KRD</comments>
   <classloader>
     <psr4 prefix="Civi\" path="Civi"/>
   </classloader>
