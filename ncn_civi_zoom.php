@@ -10,7 +10,7 @@ use Lcobucci\JWT\Signer\Key;
 use Dotenv\Dotenv;
 
 // Load .env file
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 // 
@@ -91,7 +91,7 @@ function ncn_civi_zoom_civicrm_disable() {
  */
 function ncn_civi_zoom_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
   CRM_Civirules_Utils_Upgrader::insertActionsFromJson($this->extensionDir . DIRECTORY_SEPARATOR . 'civirules_actions.json');
-  
+
   return _ncn_civi_zoom_civix_civicrm_upgrade($op, $queue);
 }
 
