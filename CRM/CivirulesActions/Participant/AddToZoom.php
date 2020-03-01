@@ -60,7 +60,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'sequential' => 1,
 			  'return' => ["email", "first_name", "last_name", "street_address", "city", "state_province_name", "country", "postal_code"],
 			  'id' => "",
-			])['values'];
+			])['values'][0];
 		} catch (Exception $e) {
 			watchdog(
 			  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
@@ -78,9 +78,10 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 		watchdog(
 		  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
-		  'participant: @participant',
+		  'participant: @participant url: @url',
 		  array(
-		  	'@participant' => print_r($participant, TRUE)
+		  	'@participant' => print_r($participant, TRUE),
+		  	'url' => $url
 		  ),
 		  WATCHDOG_INFO
 		);
@@ -94,7 +95,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
 			  'Zoom Response: @response',
 			  array(
-			  	'@response' => print_r($response->json(), TRUE)
+			  	'@response' => $response->isOk()
 			  ),
 			  WATCHDOG_INFO
 			);
