@@ -75,11 +75,10 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 	private function addParticipant($participant, $webinar) {
 		$url = $_ENV['ZOOM_BASE_URL'] . "/webinars/$webinar/registrants";
-		$token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IkxST1lFdEQ0UTJDRGE0RlV0N0p2LUEiLCJleHAiOjE1ODM2MzA1OTgsImlhdCI6MTU4MzAyNTgxNH0.yPLF7Vo3j0HyC_Q759nXHzKbbptsVknu71vr1Ox7u4s";
 
 		$response = Zttp::withHeaders([
 			'Content-Type' => 'application/json;charset=UTF-8',
-			'Authorization' => "Bearer $token"
+			'Authorization' => "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IkxST1lFdEQ0UTJDRGE0RlV0N0p2LUEiLCJleHAiOjE1ODM2MzA1OTgsImlhdCI6MTU4MzAyNTgxNH0.yPLF7Vo3j0HyC_Q759nXHzKbbptsVknu71vr1Ox7u4s"
 		])->post($url, $participant);
 
 		if ($response->isOk()) {
