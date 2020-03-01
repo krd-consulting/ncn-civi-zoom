@@ -75,29 +75,20 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 	private function addParticipant($participant, $webinar) {
 		$url = $_ENV['ZOOM_BASE_URL'] . "/webinars/$webinar/registrants";
-
-		watchdog(
-		  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
-		  'url: @url',
-		  array(
-		  	'@url' => $url
-		  ),
-		  WATCHDOG_INFO
-		);
+		$token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IkxST1lFdEQ0UTJDRGE0RlV0N0p2LUEiLCJleHAiOjE1ODM2MzA1OTgsImlhdCI6MTU4MzAyNTgxNH0.yPLF7Vo3j0HyC_Q759nXHzKbbptsVknu71vr1Ox7u4s";
 
 		$response = Zttp::withHeaders([
 			'Content-Type' => 'application/json;charset=UTF-8',
-			'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IkxST1lFdEQ0UTJDRGE0RlV0N0p2LUEiLCJleHAiOjE1ODM2MzA1OTgsImlhdCI6MTU4MzAyNTgxNH0.yPLF7Vo3j0HyC_Q759nXHzKbbptsVknu71vr1Ox7u4s'
+			'Authorization' => "Bearer $token"
 		])->post($url, $participant);
 
-		watchdog(
-			  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
-			  'Zoom Response: @response',
-			  array(
-			  	'@response' => $response->isOk()
-			  ),
-			  WATCHDOG_INFO
+		if ($response->isOk()) {
+			CRM_Core_Session::setStatus(
+				"$participant['first_name'] $participant['last_name'] was added to Zoom Webinar $webinar.", 
+				ts('Participant added!'), 
+				'success'
 			);
+		}
 	}
 
 	private function createJWTToken() {
