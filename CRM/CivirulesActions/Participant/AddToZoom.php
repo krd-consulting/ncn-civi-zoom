@@ -78,9 +78,9 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 		watchdog(
 		  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
-		  'participant: @particpant',
+		  'participant: @participant',
 		  array(
-		  	'@particpant' => print_r($particpant, TRUE)
+		  	'@particpant' => print_r($participant, TRUE)
 		  ),
 		  WATCHDOG_INFO
 		);
