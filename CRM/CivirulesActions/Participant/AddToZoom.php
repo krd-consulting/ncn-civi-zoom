@@ -78,7 +78,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 		$response = Zttp::withHeaders([
 			'Content-Type' => 'multipart/form-data',
-			'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IktQTnprS2VZUy1Xc0p1YnUzSEJkMGciLCJleHAiOjE1ODM2MjUxMDksImlhdCI6MTU4MzAyMDMyNH0.WG96RZhNZFfr-rFKVuRVtFcA3JwWibXqPep5HXCRCs0'
+			'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IkxST1lFdEQ0UTJDRGE0RlV0N0p2LUEiLCJleHAiOjE1ODM2MzA1OTgsImlhdCI6MTU4MzAyNTgxNH0.yPLF7Vo3j0HyC_Q759nXHzKbbptsVknu71vr1Ox7u4s'
 		])->post($url, $participant);
 
 		watchdog(
