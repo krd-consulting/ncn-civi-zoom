@@ -2,7 +2,7 @@
     "require": {
     	"guzzlehttp/guzzle": "6.5.0",
         "kitetail/zttp": "^0.6.0",
-        "lcobucci/jwt": "^3.3",
-        "vlucas/phpdotenv": "^4.1"        
+        "vlucas/phpdotenv": "^4.1",
+        "firebase/php-jwt": "^5.1"        
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Firebase\JWT\JWT;
 use Zttp\Zttp;
 
 class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
@@ -73,14 +74,23 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		return $result;
 	}
 
+	/**
+	 * Add's the given participant data as a single participant
+	 * to a Zoom Webinar with the given id.
+	 * 
+	 * @param array $participant participant data where email, first_name, and last_name are required
+	 * @param int $webinar id of an existing Zoom webinar
+	 */
 	private function addParticipant($participant, $webinar) {
 		$url = $_ENV['ZOOM_BASE_URL'] . "/webinars/$webinar/registrants";
+		$token = $this->createJWTToken();
 
 		$response = Zttp::withHeaders([
 			'Content-Type' => 'application/json;charset=UTF-8',
-			'Authorization' => "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6IkxST1lFdEQ0UTJDRGE0RlV0N0p2LUEiLCJleHAiOjE1ODM2MzA1OTgsImlhdCI6MTU4MzAyNTgxNH0.yPLF7Vo3j0HyC_Q759nXHzKbbptsVknu71vr1Ox7u4s"
+			'Authorization' => "Bearer $token"
 		])->post($url, $participant);
 
+		// Alert to user on success.
 		if ($response->isOk()) {
 			$firstName = $participant['first_name'];
 			$lastName = $participant['last_name'];
@@ -94,7 +104,14 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	}
 
 	private function createJWTToken() {
+		$key = $_ENV['ZOOM_API_SECRET'];
+		$payload = array(
+		    "iss" => $_ENV['ZOOM_API_KEY'],
+		    "exp" => strotime('+1 hour')
+		);
+		$jwt = JWT::encode($payload, $key);
 
+		return $jwt;
 	}
 
 	/**
