@@ -36,7 +36,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'sequential' => 1,
 			  'return' => ["custom_48"],
 			  'id' => $event,
-			])['values']['custom_48'];
+			])['values'][0]['custom_48'];
 		} catch (Exception $e) {
 
 		}
