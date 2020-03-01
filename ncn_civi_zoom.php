@@ -90,7 +90,7 @@ function ncn_civi_zoom_civicrm_disable() {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
  */
 function ncn_civi_zoom_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  CRM_Civirules_Utils_Upgrader::insertActionsFromJson(__DIR__ . 'civirules_actions.json');
+  CRM_Civirules_Utils_Upgrader::insertActionsFromJson(__DIR__ . '/civirules_actions.json');
 
   return _ncn_civi_zoom_civix_civicrm_upgrade($op, $queue);
 }
