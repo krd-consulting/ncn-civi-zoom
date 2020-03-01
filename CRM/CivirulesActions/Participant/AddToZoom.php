@@ -60,7 +60,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'sequential' => 1,
 			  'return' => ["email", "first_name", "last_name", "street_address", "city", "state_province_name", "country", "postal_code"],
 			  'id' => "",
-			]);
+			])['values'];
 		} catch (Exception $e) {
 			watchdog(
 			  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
