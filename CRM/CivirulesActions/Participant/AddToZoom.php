@@ -15,13 +15,13 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	public function processAction(CRM_Civirules_TriggerData_TriggerData $triggerData) {
 	  $contactId = $triggerData->getContactId();
 	  
-	  $customData = $triggerData->getEntityCustomData();
+	  $data = $triggerData->getEntityData('Event');
 
 	  watchdog(
 		  'NCN-Civi-Zoom CiviRules Action (AddToZoom)',
 		  'custom data: @custom',
 		  array(
-		  	'@custom' => print_r($customData ,TRUE)
+		  	'@custom' => print_r($data ,TRUE)
 		  ),
 		  WATCHDOG_INFO
 		);
