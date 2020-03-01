@@ -1,0 +1,7 @@
+[
+	{
+	  "name": "participant_add_to_zoom",
+	  "label": "Add Participant to Zoom",
+	  "class_name": "CRM_CivirulesActions_Participant_AddToZoom"
+	}
+]

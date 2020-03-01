@@ -4,6 +4,23 @@ require_once 'ncn_civi_zoom.civix.php';
 require_once __DIR__.'/vendor/autoload.php';
 use CRM_NcnCiviZoom_ExtensionUtil as E;
 
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key;
+use Dotenv\Dotenv;
+
+// Load .env file
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// 
+$configuration = Configuration::forAsymmetricSigner(
+    // You may use RSA or ECDSA and all their variations (256, 384, and 512)
+    new Signer\RSA\Sha256(),
+    new Key($_ENV['ZOOM_API_SECRET']),
+    new Key($_ENV['ZOOM_API_KEY'])
+);
+
 /**
  * Implements hook_civicrm_config().
  *
