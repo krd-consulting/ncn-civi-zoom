@@ -107,7 +107,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		$key = $_ENV['ZOOM_API_SECRET'];
 		$payload = array(
 		    "iss" => $_ENV['ZOOM_API_KEY'],
-		    "exp" => strotime('+1 hour')
+		    "exp" => strtotime('+1 hour')
 		);
 		$jwt = JWT::encode($payload, $key);
 
