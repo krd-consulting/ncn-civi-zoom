@@ -15,7 +15,7 @@ $dotenv->load();
 
 function ncn_civi_zoom_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions)
 {
-  $permissions['participant']['createfromzoom'] = array('access CiviEvent');
+  $permissions['event']['generatewebinarattendance'] = array('access CiviEvent');
 }
 
 /**
