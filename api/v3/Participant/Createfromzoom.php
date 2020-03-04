@@ -1,6 +1,9 @@
 <?php
 use CRM_Ncnciviapi_ExtensionUtil as E;
 
+use Firebase\JWT\JWT;
+use Zttp\Zttp;
+
 
 /**
  * Contact.FindOrCreate API specification (optional)
@@ -29,9 +32,16 @@ function _civicrm_api3_participant_createfromzoom_spec(&$spec) {
  */
 function civicrm_api3_participant_createfromzoom($params) {
 
+	$key = $_ENV['ZOOM_API_SECRET'];
+	$payload = array(
+	    "iss" => $_ENV['ZOOM_API_KEY'],
+	    "exp" => strtotime('+1 hour')
+	);
+	$jwt = JWT::encode($payload, $key);
+
 	return [
 		'values' => [
-			$params
+			$_POST
 		]
 	];
 }
