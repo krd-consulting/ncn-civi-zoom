@@ -41,11 +41,12 @@ function civicrm_api3_participant_createfromzoom($params) {
 	);
 	$jwt = JWT::encode($payload, $key);
 
+	// Get request body
 	$data = json_decode(file_get_contents('php://input'), true);
 
 	return [
 		'values' => [
-			$data
+			$data['payload']['participant']['id']
 		]
 	];
 }
