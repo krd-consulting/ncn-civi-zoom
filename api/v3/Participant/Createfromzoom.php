@@ -11,10 +11,6 @@ use CRM_Ncnciviapi_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/api-architecture/
  */
 function _civicrm_api3_participant_createfromzoom_spec(&$spec) {
-  $spec['contact_type']['api.required'] = 1;
-  $spec['first_name']['api.required'] = 1;
-  $spec['last_name']['api.required'] = 1;
-  $spec['email']['api.required'] = 1;
 }
 
 /**
@@ -33,18 +29,9 @@ function _civicrm_api3_participant_createfromzoom_spec(&$spec) {
  */
 function civicrm_api3_participant_createfromzoom($params) {
 
-	// Find contact using given $params.
-	$response = civicrm_api3_contact_get($params);
-
-	// No results? Create the contact.
-	if(empty($response['values'])) 
-		$response = civicrm_api3_contact_create($params);
-
 	return [
 		'values' => [
-			$response['id'] => [
-				'id' => $response['id'],
-			]
+			$params
 		]
 	];
 }
