@@ -43,10 +43,11 @@ function civicrm_api3_participant_createfromzoom($params) {
 
 	// Get request body
 	$data = json_decode(file_get_contents('php://input'), true);
+	$webinarID = $data['payload']['object']['id'];
 
 	return [
 		'values' => [
-			$data['payload']['participant']['id']
+			$data['payload']['object']['id']
 		]
 	];
 }
