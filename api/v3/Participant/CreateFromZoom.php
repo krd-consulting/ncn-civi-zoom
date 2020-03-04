@@ -33,9 +33,18 @@ function _civicrm_api3_participant_createfromzoom_spec(&$spec) {
  */
 function civicrm_api3_participant_createfromzoom($params) {
 
+	// Find contact using given $params.
+	$response = civicrm_api3_contact_get($params);
+
+	// No results? Create the contact.
+	if(empty($response['values'])) 
+		$response = civicrm_api3_contact_create($params);
+
 	return [
 		'values' => [
-			$params
+			$response['id'] => [
+				'id' => $response['id'],
+			]
 		]
 	];
 }
