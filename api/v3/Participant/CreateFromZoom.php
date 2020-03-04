@@ -11,10 +11,10 @@ use CRM_Ncnciviapi_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/api-architecture/
  */
 function _civicrm_api3_participant_createfromzoom_spec(&$spec) {
-  // $spec['contact_type']['api.required'] = 1;
-  // $spec['first_name']['api.required'] = 1;
-  // $spec['last_name']['api.required'] = 1;
-  // $spec['email']['api.required'] = 1;
+  $spec['contact_type']['api.required'] = 1;
+  $spec['first_name']['api.required'] = 1;
+  $spec['last_name']['api.required'] = 1;
+  $spec['email']['api.required'] = 1;
 }
 
 /**
