@@ -1,44 +1,17 @@
 # ncn-civi-zoom
-
-![Screenshot](/images/screenshot.png)
-
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
-
-The extension is licensed under [AGPL-3.0](LICENSE.txt).
+Civirules Conditions/Actions that talk with Zoom developed for NCN.
 
 ## Requirements
 
 * PHP v7.0+
-* CiviCRM (*FIXME: Version number*)
+* CiviCRM 5.0+
 
-## Installation (Web UI)
+## Setup
+Create a `.env` file by renaming the `.env.example` and assigning appropriate values to its keys.
 
-This extension has not yet been published for installation via the web UI.
+## Actions
+### Add to Zoom
+Must be paired with an `Event Participant` trigger. 
 
-## Installation (CLI, Zip)
-
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-cd <extension-dir>
-cv dl ncn-civi-zoom@https://github.com/FIXME/ncn-civi-zoom/archive/master.zip
-```
-
-## Installation (CLI, Git)
-
-Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) repo for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-git clone https://github.com/FIXME/ncn-civi-zoom.git
-cv en ncn_civi_zoom
-```
-
-## Usage
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
+This action takes the Zoom Webinar ID from an event where a participant has just been added. In NCN's case, the Zoom Webinar ID
+is in the custom field `custom_48`.
