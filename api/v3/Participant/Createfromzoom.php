@@ -14,6 +14,7 @@ use Zttp\Zttp;
  * @see https://docs.civicrm.org/dev/en/latest/framework/api-architecture/
  */
 function _civicrm_api3_participant_createfromzoom_spec(&$spec) {
+	$spec['verification_token']['api.required'] = 1;
 }
 
 /**
@@ -31,6 +32,7 @@ function _civicrm_api3_participant_createfromzoom_spec(&$spec) {
  *
  */
 function civicrm_api3_participant_createfromzoom($params) {
+	$verification_token = "H1O4Lg6dQ0Oq3__Xms1qUw";
 
 	$key = $_ENV['ZOOM_API_SECRET'];
 	$payload = array(
@@ -39,9 +41,11 @@ function civicrm_api3_participant_createfromzoom($params) {
 	);
 	$jwt = JWT::encode($payload, $key);
 
+	$data = json_decode(file_get_contents('php://input'), true);
+
 	return [
 		'values' => [
-			$_POST
+			$data
 		]
 	];
 }
