@@ -54,7 +54,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 
 	$token = $jwt;
 
-	$page = 1;
+	$page = 0;
 	// Get and loop through all of webinar registrants
 	$url = $_ENV['ZOOM_BASE_URL'] . "/past_webinars/$webinar/absentees?page=$page";
 
@@ -64,7 +64,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 		'Authorization' => "Bearer $token"
 	])->get($url);
 
-	$pages = $response->json()['page_number'];
+	$pages = $response->json()['page_count'];
 
 	// Store registrants who did not attend the webinar
 	$absentees = $response->json()['registrants'];
@@ -73,7 +73,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 
 	$attendees = [];
 
-	while($page <= $pages) {
+	while($page < $pages) {
 		foreach($absentees as $absentee) {
 			$email = $absentee['email'];
 
@@ -94,8 +94,6 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 			'Content-Type' => 'application/json;charset=UTF-8',
 			'Authorization' => "Bearer $token"
 		])->get($url);
-
-		$pages = $response->json()['page_number'];
 
 		// Store registrants who did not attend the webinar
 		$absentees = $response->json()['registrants'];
