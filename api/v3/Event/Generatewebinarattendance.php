@@ -125,7 +125,8 @@ SQL;
 	while($query->fetch()) {
 		array_push($attendees, [
 			'email' => $query->email,
-			'contact_id' => $query->contact_id
+			'contact_id' => $query->contact_id,
+			'participant_id' => $query->id
 		]);
 	}
 
@@ -136,7 +137,7 @@ function updateAttendeesStatus($attendees, $event) {
 	foreach($attendees as $attendee) {
 		civicrm_api3('Participant', 'create', [
 		  'event_id' => $event,
-		  'contact_id' => $attendee['contact_id'],
+		  'id' => $attendee['participant_id'],
 		  'status_id' => "Attended",
 		]);
 	}
