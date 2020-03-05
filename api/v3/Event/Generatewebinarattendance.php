@@ -6,8 +6,10 @@ use Zttp\Zttp;
 
 
 /**
- * Contact.FindOrCreate API specification (optional)
- * This is used for documentation and validation.
+ * Participant.GenerateWebinarAttendance specification
+ * 
+ * Makes sure that the verification token is provided as a parameter
+ * in the request to make sure that request is from a reliable source.
  *
  * @param array $spec description of fields supported by this API call
  *
@@ -18,10 +20,16 @@ function _civicrm_api3_participant_generatewebinarattendance_spec(&$spec) {
 }
 
 /**
- * Contact.FindOrCreate API
+ * Participant.GenerateWebinarAttendance API
  *
- * Queries for an individual using first_name, last_name, and email and creates a contact if
- * no contacts are returned. 
+ * Designed to be called by a Zoom Event Subscription (event: webinar.ended).
+ * Once invoked, it gets the absent registrants from the webinar that just ended.
+ * 
+ * Then, it gets the event associated with the webinar, as well as, the
+ * registered participants of the event.
+ *
+ * Absent registrants are then subtracted from registered participants and,
+ * the remaining participants' statuses are set to Attended.
  *
  * @param array $params
  *
@@ -32,7 +40,12 @@ function _civicrm_api3_participant_generatewebinarattendance_spec(&$spec) {
  *
  */
 function civicrm_api3_event_generatewebinarattendance($params) {
-	$verification_token = "H1O4Lg6dQ0Oq3__Xms1qUw";
+	$verification_token = $_ENV['ZOOM_VERIFICATION_TOKEN'];
+
+	if($verification_token != $params['verification_token']) {
+		throw new \Civi\API\Exception\UnauthorizedException('Invalid verification token.');
+	}
+
 
 	$key = $_ENV['ZOOM_API_SECRET'];
 	$payload = array(
@@ -101,11 +114,16 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 
 	updateAttendeesStatus($attendees, $event);
 
-	return [
-		'values' => $attendees
-	];
+	return civicrm_api3_create_success($attendees, $params, 'Participant');
 }
 
+/**
+ * Queries for the registered participants that weren't absent
+ * during the webinar.
+ * @param  array $absenteesEmails emails of registrants absent from the webinar
+ * @param  int $event the id of the webinar's associated event
+ * @return array participants (email, participant_id, contact_id) who weren't absent
+ */
 function selectAttendees($absenteesEmails, $event) {
 	$absenteesEmails = implode(',', $absenteesEmails);
 
@@ -137,6 +155,12 @@ SQL;
 	return $attendees;
 }
 
+/**
+ * Set the status of the registrants who weren't absent to Attended.
+ * @param  array $attendees registrants who weren't absent
+ * @param  int $event the event associated with the webinar
+ * 
+ */
 function updateAttendeesStatus($attendees, $event) {
 	foreach($attendees as $attendee) {
 		civicrm_api3('Participant', 'create', [
