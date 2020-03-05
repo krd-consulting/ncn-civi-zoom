@@ -72,7 +72,11 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 
 	$absenteesEmails = [];
 
-	$attendees = selectAttendees();
+	for($absentee in $absentees) {
+		array_push($absenteesEmails, $absentee['email']);
+	}
+
+	$attendees = selectAttendees($absenteesEmails);
 
 	// while($page <= $pages) {
 	// 	for($absentee in $absentees) {
