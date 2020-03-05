@@ -123,7 +123,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	 * @access public
 	 */
 	public function getExtraDataInputUrl($ruleActionId) {
-  	return FALSE;
+  		return FALSE;
 	}
 
 }
