@@ -52,11 +52,11 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	  'limit' => 1
 	])['values'][0]['id'];
 
-	$page = 1;
+	$token = $jwt;
 
+	$page = 1;
 	// Get and loop through all of webinar registrants
 	$url = $_ENV['ZOOM_BASE_URL'] . "/past_webinars/$webinar/absentees?page=$page";
-	$token = $jwt;
 
 	// Get absentees from Zoom API
 	$response = Zttp::withHeaders([
@@ -65,30 +65,41 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	])->get($url);
 
 	$pages = $response->json()['page_number'];
-	$page++;
 
 	// Store registrants who did not attend the webinar
 	$absentees = $response->json()['registrants'];
 
 	$absenteesEmails = [];
 
-	foreach($absentees as $absentee) {
-		$email = $absentee['email'];
+	while($page <= $pages) {
+		foreach($absentees as $absentee) {
+			$email = $absentee['email'];
 
-		array_push($absenteesEmails, "'$email'");
+			array_push($absenteesEmails, "'$email'");
+		}
+
+		$attendees = selectAttendees($absenteesEmails);
+
+		// updateAttendeesStatus($attendees);
+
+		$page++;
+
+		// Get and loop through all of webinar registrants
+		$url = $_ENV['ZOOM_BASE_URL'] . "/past_webinars/$webinar/absentees?page=$page";
+
+		// Get absentees from Zoom API
+		$response = Zttp::withHeaders([
+			'Content-Type' => 'application/json;charset=UTF-8',
+			'Authorization' => "Bearer $token"
+		])->get($url);
+
+		$pages = $response->json()['page_number'];
+
+		// Store registrants who did not attend the webinar
+		$absentees = $response->json()['registrants'];
+
+		$absenteesEmails = [];
 	}
-
-	$attendees = selectAttendees($absenteesEmails);
-
-	// while($page <= $pages) {
-	// 	for($absentee in $absentees) {
-	// 		array_push($absenteesEmails, $absentee['email']);
-	// 	}
-
-
-
-	// 	$page++;
-	// }
 
 	return [
 		'values' => [
@@ -118,4 +129,13 @@ SQL;
 	}
 
 	return $attendees;
+}
+
+function updateAttendeesStatus($attendees) {
+	// foreach($attendees as $attendee) {
+	// 	$email = $absentee['email'];
+
+	// 	array_push($absenteesEmails, "'$email'");
+	// }
+
 }
