@@ -110,7 +110,11 @@ function selectAttendees($absenteesEmails, $event) {
 	$absenteesEmails = implode(',', $absenteesEmails);
 
 	$selectAttendees = <<<SQL
-		SELECT * FROM `civicrm_participant` 
+		SELECT 
+			`civicrm_email`.`email`,
+			`civicrm_participant`.`contact_id`,
+			`civicrm_participant`.`id` AS `participant_id`
+		FROM `civicrm_participant` 
 		LEFT JOIN `civicrm_email` ON `civicrm_participant`.`contact_id` = `civicrm_email`.`contact_id`
 		WHERE 
 			`civicrm_email`.`email` NOT IN ($absenteesEmails) AND
@@ -126,7 +130,7 @@ SQL;
 		array_push($attendees, [
 			'email' => $query->email,
 			'contact_id' => $query->contact_id,
-			'participant_id' => $query->id
+			'participant_id' => $query->participant_id
 		]);
 	}
 
