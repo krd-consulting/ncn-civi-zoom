@@ -45,19 +45,69 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	$data = json_decode(file_get_contents('php://input'), true);
 	$webinar = $data['payload']['object']['id'];
 
+	// Get event of webinar
+	$event = civicrm_api3('Event', 'get', [
+	  'sequential' => 1,
+	  'custom_48' => $webinar,
+	  'limit' => 1
+	])['values'][0]['id'];
+
+	$page = 1;
+
 	// Get and loop through all of webinar registrants
-	$url = $_ENV['ZOOM_BASE_URL'] . "/past_webinars/$webinar/absentees";
+	$url = $_ENV['ZOOM_BASE_URL'] . "/past_webinars/$webinar/absentees?page=$page";
 	$token = $jwt;
 
+	// Get absentees from Zoom API
 	$response = Zttp::withHeaders([
 		'Content-Type' => 'application/json;charset=UTF-8',
 		'Authorization' => "Bearer $token"
 	])->get($url);
 
+	$pages = $response->json()['page_number'];
+	$page++;
+
+	// Store registrants who did not attend the webinar
+	$absentees = $response->json()['registrants'];
+
+	$absenteesEmails = [];
+
+	$attendees = selectAttendees();
+
+	// while($page <= $pages) {
+	// 	for($absentee in $absentees) {
+	// 		array_push($absenteesEmails, $absentee['email']);
+	// 	}
+
+
+
+	// 	$page++;
+	// }
 
 	return [
 		'values' => [
-			$response->json()
+			$attendees
 		]
 	];
+}
+
+function selectAttendees($absenteesEmails) {
+	$selectAttendees = <<<SQL
+		SELECT * FROM `civicrm_participant` 
+		LEFT JOIN `civicrm_email` ON `civicrm_participant`.`contact_id` = `civicrm_email`.`contact_id`
+		WHERE 
+			`civicrm_email`.`email` NOT IN ($absenteesEmails) AND
+	    	`civicrm_participant`.`event_id` = 5
+SQL;
+
+	// Run query
+	$query = CRM_Core_DAO::executeQuery($selectAttendees);
+
+	$attendees = [];
+
+	while($query->fetch()) {
+		array_push($attendees, $query->email);
+	}
+
+	return $attendees;
 }
