@@ -80,9 +80,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 			array_push($absenteesEmails, "'$email'");
 		}
 
-		array_push($attendees, selectAttendees($absenteesEmails, $event));
-
-		// updateAttendeesStatus($attendees, $event);
+		$attendees = array_merge($attendees, selectAttendees($absenteesEmails, $event));
 
 		$page++;
 
@@ -101,10 +99,10 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 		$absenteesEmails = [];
 	}
 
+	updateAttendeesStatus($attendees, $event);
+
 	return [
-		'values' => [
-			$attendees
-		]
+		'values' => $attendees
 	];
 }
 
