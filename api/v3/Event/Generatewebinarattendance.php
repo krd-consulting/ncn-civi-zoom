@@ -82,7 +82,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 
 		array_push($attendees, selectAttendees($absenteesEmails));
 
-		// updateAttendeesStatus($attendees);
+		updateAttendeesStatus($attendees);
 
 		$page++;
 
@@ -108,7 +108,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	];
 }
 
-function selectAttendees($absenteesEmails) {
+function selectAttendees($absenteesEmails, $webinar) {
 	$absenteesEmails = implode(',', $absenteesEmails);
 
 	$selectAttendees = <<<SQL
@@ -116,7 +116,7 @@ function selectAttendees($absenteesEmails) {
 		LEFT JOIN `civicrm_email` ON `civicrm_participant`.`contact_id` = `civicrm_email`.`contact_id`
 		WHERE 
 			`civicrm_email`.`email` NOT IN ($absenteesEmails) AND
-	    	`civicrm_participant`.`event_id` = 5
+	    	`civicrm_participant`.`event_id` = $webinar
 SQL;
 
 	// Run query
@@ -125,17 +125,21 @@ SQL;
 	$attendees = [];
 
 	while($query->fetch()) {
-		array_push($attendees, $query->email);
+		array_push($attendees, [
+			'email' => $query->email,
+			'contact_id' => $query->contact_id
+		]);
 	}
 
 	return $attendees;
 }
 
-function updateAttendeesStatus($attendees) {
-	// foreach($attendees as $attendee) {
-	// 	$email = $absentee['email'];
-
-	// 	array_push($absenteesEmails, "'$email'");
-	// }
-
+function updateAttendeesStatus($attendees, $webinar) {
+	foreach($attendees as $attendee) {
+		civicrm_api3('Participant', 'create', [
+		  'event_id' => $webinar,
+		  'contact_id' => $attendee['contact_id'],
+		  'status_id' => "Attended",
+		]);
+	}
 }
