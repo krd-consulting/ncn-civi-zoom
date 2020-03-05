@@ -96,6 +96,8 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 }
 
 function selectAttendees($absenteesEmails) {
+	$absenteesEmails = implode(',', $absenteesEmails);
+
 	$selectAttendees = <<<SQL
 		SELECT * FROM `civicrm_participant` 
 		LEFT JOIN `civicrm_email` ON `civicrm_participant`.`contact_id` = `civicrm_email`.`contact_id`
