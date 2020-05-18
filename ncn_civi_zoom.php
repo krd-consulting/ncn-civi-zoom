@@ -2,16 +2,17 @@
 
 require_once 'ncn_civi_zoom.civix.php';
 require_once __DIR__.'/vendor/autoload.php';
+define('ZOOM_SETTINGS', 'Zoom_Settings');
 use CRM_NcnCiviZoom_ExtensionUtil as E;
 
 // use Lcobucci\JWT\Configuration;
 // use Lcobucci\JWT\Signer;
 // use Lcobucci\JWT\Signer\Key;
-use Dotenv\Dotenv;
+// use Dotenv\Dotenv;
 
 // Load .env file
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+// $dotenv = Dotenv::createImmutable(__DIR__);
+// $dotenv->load();
 
 function ncn_civi_zoom_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions)
 {
@@ -21,7 +22,7 @@ function ncn_civi_zoom_civicrm_alterAPIPermissions($entity, $action, &$params, &
 /**
  * Implements hook_civicrm_config().
  *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/ 
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
  */
 function ncn_civi_zoom_civicrm_config(&$config) {
   _ncn_civi_zoom_civix_civicrm_config($config);
@@ -174,6 +175,27 @@ function ncn_civi_zoom_civicrm_preProcess($formName, &$form) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  *
+ */
+function ncn_civi_zoom_civicrm_navigationMenu(&$menu) {
+  $parentId             = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Events', 'id', 'name');
+  $maxId                = max(array_keys($menu));
+  $zoomSettingMaxId     = $maxId+1;
+
+  $menu[$parentId]['child'][$zoomSettingMaxId] = array(
+        'attributes' => array(
+          'label'     => ts('Zoom Settings'),
+          'name'      => 'Zoom_Settings',
+          'url'       => 'civicrm/Zoom/settings?reset=1',
+          'active'    => 1,
+          'parentID'  => $parentId,
+          'operator'  => NULL,
+          'navID'     => $zoomSettingMaxId,
+          'permission'=> 'administer CiviCRM',
+        ),
+  );
+}
+
+/*
 function ncn_civi_zoom_civicrm_navigationMenu(&$menu) {
   _ncn_civi_zoom_civix_insert_navigation_menu($menu, 'Mailings', array(
     'label' => E::ts('New subliminal message'),

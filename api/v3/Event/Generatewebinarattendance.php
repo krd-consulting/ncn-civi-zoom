@@ -7,7 +7,7 @@ use Zttp\Zttp;
 
 /**
  * Participant.GenerateWebinarAttendance specification
- * 
+ *
  * Makes sure that the verification token is provided as a parameter
  * in the request to make sure that request is from a reliable source.
  *
@@ -24,7 +24,7 @@ function _civicrm_api3_participant_generatewebinarattendance_spec(&$spec) {
  *
  * Designed to be called by a Zoom Event Subscription (event: webinar.ended).
  * Once invoked, it gets the absent registrants from the webinar that just ended.
- * 
+ *
  * Then, it gets the event associated with the webinar, as well as, the
  * registered participants of the event.
  *
@@ -46,10 +46,10 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 		throw new \Civi\API\Exception\UnauthorizedException('Invalid verification token.');
 	}
 
-
-	$key = $_ENV['ZOOM_API_SECRET'];
+	$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
+	$key = $settings['api_key'];
 	$payload = array(
-	    "iss" => $_ENV['ZOOM_API_KEY'],
+	    "iss" => $settings['secret_key'],
 	    "exp" => strtotime('+1 hour')
 	);
 	$jwt = JWT::encode($payload, $key);
@@ -57,11 +57,12 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	// Get request body
 	$data = json_decode(file_get_contents('php://input'), true);
 	$webinar = $data['payload']['object']['id'];
+	$customField = CRM_NcnCiviZoom_Utils::getCustomField();
 
 	// Get event of webinar
 	$event = civicrm_api3('Event', 'get', [
 	  'sequential' => 1,
-	  'custom_48' => $webinar,
+	  $customField => $webinar,
 	  'limit' => 1
 	])['values'][0]['id'];
 
@@ -69,7 +70,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 
 	$page = 0;
 	// Get and loop through all of webinar registrants
-	$url = $_ENV['ZOOM_BASE_URL'] . "/past_webinars/$webinar/absentees?page=$page";
+	$url = $settings['base_url'] . "/past_webinars/$webinar/absentees?page=$page";
 
 	// Get absentees from Zoom API
 	$response = Zttp::withHeaders([
@@ -98,7 +99,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 		$page++;
 
 		// Get and loop through all of webinar registrants
-		$url = $_ENV['ZOOM_BASE_URL'] . "/past_webinars/$webinar/absentees?page=$page";
+		$url = $settings['base_url'] . "/past_webinars/$webinar/absentees?page=$page";
 
 		// Get absentees from Zoom API
 		$response = Zttp::withHeaders([
@@ -128,13 +129,13 @@ function selectAttendees($absenteesEmails, $event) {
 	$absenteesEmails = implode(',', $absenteesEmails);
 
 	$selectAttendees = <<<SQL
-		SELECT 
+		SELECT
 			`civicrm_email`.`email`,
 			`civicrm_participant`.`contact_id`,
 			`civicrm_participant`.`id` AS `participant_id`
-		FROM `civicrm_participant` 
+		FROM `civicrm_participant`
 		LEFT JOIN `civicrm_email` ON `civicrm_participant`.`contact_id` = `civicrm_email`.`contact_id`
-		WHERE 
+		WHERE
 			`civicrm_email`.`email` NOT IN ($absenteesEmails) AND
 	    	`civicrm_participant`.`event_id` = $event
 SQL;
@@ -159,7 +160,7 @@ SQL;
  * Set the status of the registrants who weren't absent to Attended.
  * @param  array $attendees registrants who weren't absent
  * @param  int $event the event associated with the webinar
- * 
+ *
  */
 function updateAttendeesStatus($attendees, $event) {
 	foreach($attendees as $attendee) {
