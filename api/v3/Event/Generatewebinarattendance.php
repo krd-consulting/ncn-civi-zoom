@@ -47,9 +47,9 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	}
 
 	$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
-	$key = $settings['api_key'];
+	$key = $settings['secret_key'];
 	$payload = array(
-	    "iss" => $settings['secret_key'],
+	    "iss" => $settings['api_key'],
 	    "exp" => strtotime('+1 hour')
 	);
 	$jwt = JWT::encode($payload, $key);

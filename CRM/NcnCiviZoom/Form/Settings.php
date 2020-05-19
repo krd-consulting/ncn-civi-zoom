@@ -33,8 +33,10 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
 
     // export form elements
     $this->assign('elementNames', $this->getRenderableElementNames());
+
     //Set default Values
     $defaults = CRM_NcnCiviZoom_Utils::getZoomSettings();
+
     $this->setDefaults($defaults);
     parent::buildQuickForm();
   }
@@ -45,9 +47,8 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
     $zoomSettings['secret_key']   = $values['secret_key'];
     $zoomSettings['base_url']     = $values['base_url'];
     $zoomSettings['custom_field_id'] = $values['custom_field_id'];
-    CRM_Core_Error::debug_var('values',$values);
     CRM_Core_BAO_Setting::setItem($zoomSettings, ZOOM_SETTINGS, 'zoom_settings');
-    CRM_Core_Session::setStatus(E::ts('Your Settings have been saved'), null, 'success');
+    CRM_Core_Session::setStatus(E::ts('Your Settings have been saved'), ts('Zoom Settings'), 'success');
     $redirectUrl    = CRM_Utils_System::url('civicrm/Zoom/settings', 'reset=1',  TRUE, NULL, FALSE, TRUE);
     CRM_Utils_System::redirect($redirectUrl);
     parent::postProcess();

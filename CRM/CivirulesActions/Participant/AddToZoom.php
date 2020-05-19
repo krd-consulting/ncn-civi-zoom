@@ -39,7 +39,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'id' => $event,
 			])['values'][0][$customField];
 		} catch (Exception $e) {
-
+			throw $e;
 		}
 
 		return $result;
@@ -106,9 +106,9 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 	private function createJWTToken() {
 		$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
-		$key = $settings['api_key'];
+		$key = $settings['secret_key'];
 		$payload = array(
-		    "iss" => $settings['secret_key'],
+		    "iss" => $settings['api_key'],
 		    "exp" => strtotime('+1 hour')
 		);
 		$jwt = JWT::encode($payload, $key);
