@@ -59,12 +59,21 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	$webinar = $data['payload']['object']['id'];
 	$customField = CRM_NcnCiviZoom_Utils::getCustomField();
 
-	// Get event of webinar
-	$event = civicrm_api3('Event', 'get', [
-	  'sequential' => 1,
-	  $customField => $webinar,
-	  'limit' => 1
-	])['values'][0]['id'];
+	$event = [];
+	if($customField)){
+		try {
+			// Get event of webinar
+			$event = civicrm_api3('Event', 'get', [
+			  'sequential' => 1,
+			  $customField => $webinar,
+			  'limit' => 1
+			])['values'][0]['id'];
+		} catch (Exception $e) {
+			throw $e;
+		}
+	} else{
+		CRM_Core_Error::debug_var('Error','Please use the settings page to set the Custom Field Id');
+	}
 
 	$token = $jwt;
 
