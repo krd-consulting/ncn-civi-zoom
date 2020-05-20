@@ -14,7 +14,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	 */
 	public function processAction(CRM_Civirules_TriggerData_TriggerData $triggerData) {
 	  $contactId = $triggerData->getContactId();
-	  
+
 	  $event = $triggerData->getEntityData('Event');
 
 	  $webinar = $this->getWebinarID($event['id']);
@@ -31,15 +31,15 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	 */
 	private function getWebinarID($event) {
 		$result;
-
+		$customField = CRM_NcnCiviZoom_Utils::getCustomField();
 		try {
 			$result = civicrm_api3('Event', 'get', [
 			  'sequential' => 1,
-			  'return' => ["custom_48"],
+			  'return' => [$customField],
 			  'id' => $event,
-			])['values'][0]['custom_48'];
+			])['values'][0][$customField];
 		} catch (Exception $e) {
-
+			throw $e;
 		}
 
 		return $result;
@@ -77,12 +77,13 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	/**
 	 * Add's the given participant data as a single participant
 	 * to a Zoom Webinar with the given id.
-	 * 
+	 *
 	 * @param array $participant participant data where email, first_name, and last_name are required
 	 * @param int $webinar id of an existing Zoom webinar
 	 */
 	private function addParticipant($participant, $webinar) {
-		$url = $_ENV['ZOOM_BASE_URL'] . "/webinars/$webinar/registrants";
+		$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
+		$url = $settings['base_url'] . "/webinars/$webinar/registrants";
 		$token = $this->createJWTToken();
 
 		$response = Zttp::withHeaders([
@@ -96,17 +97,18 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			$lastName = $participant['last_name'];
 
 			CRM_Core_Session::setStatus(
-				"$firstName $lastName was added to Zoom Webinar $webinar.", 
-				ts('Participant added!'), 
+				"$firstName $lastName was added to Zoom Webinar $webinar.",
+				ts('Participant added!'),
 				'success'
 			);
 		}
 	}
 
 	private function createJWTToken() {
-		$key = $_ENV['ZOOM_API_SECRET'];
+		$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
+		$key = $settings['secret_key'];
 		$payload = array(
-		    "iss" => $_ENV['ZOOM_API_KEY'],
+		    "iss" => $settings['api_key'],
 		    "exp" => strtotime('+1 hour')
 		);
 		$jwt = JWT::encode($payload, $key);
