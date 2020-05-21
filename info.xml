@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.1"?>
 <extension key="ncn-civi-zoom" type="module">
   <file>ncn_civi_zoom</file>
   <name>NCN Civirules Actions for Zoom</name>
@@ -7,7 +7,7 @@
     <author>Rupert Amodia</author>
     <email>rupert@hellokrd.net</email>
   </maintainer>
-  <releaseDate>2020-02-29</releaseDate>
+  <releaseDate>2020-05-21</releaseDate>
   <version>0.1</version>
   <requires>
     <ext>org.civicoop.civirules</ext>
