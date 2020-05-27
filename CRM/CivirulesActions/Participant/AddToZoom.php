@@ -98,8 +98,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		if ($response->isOk()) {
 			$firstName = $participant['first_name'];
 			$lastName = $participant['last_name'];
-			$msg = 'Participant Added to Zoom.';
-			$msg .= " Webminar ID: ".$webinar;
+			$msg = 'Participant Added to Zoom. Webminar ID: '.$webinar;
 			$this->logAction($msg, $triggerData, \PSR\Log\LogLevel::INFO);
 
 			CRM_Core_Session::setStatus(
@@ -109,8 +108,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			);
 		} else {
 			$result = $response->json();
-			$msg = $result['message'];
-			$msg .= " Webminar ID: ".$webinar;
+			$msg = $result['message'].' Webminar ID: '.$webinar;
 			$this->logAction($msg, $triggerData, \PSR\Log\LogLevel::ALERT);
 		}
 	}
