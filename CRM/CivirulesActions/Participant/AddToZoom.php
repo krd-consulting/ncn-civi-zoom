@@ -21,7 +21,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 	  $participant = $this->getContactData($contactId);
 
-	  $this->addParticipant($participant, $webinar);
+	  $this->addParticipant($participant, $webinar, $triggerData);
 	}
 
 	/**
@@ -33,11 +33,14 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		$result;
 		$customField = CRM_NcnCiviZoom_Utils::getCustomField();
 		try {
-			$result = civicrm_api3('Event', 'get', [
+			$apiResult = civicrm_api3('Event', 'get', [
 			  'sequential' => 1,
 			  'return' => [$customField],
 			  'id' => $event,
-			])['values'][0][$customField];
+			]);
+			// Remove any empty spaces
+			$result = trim($apiResult['values'][0][$customField]);
+			$result = str_replace(' ', '', $result);
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -81,7 +84,7 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	 * @param array $participant participant data where email, first_name, and last_name are required
 	 * @param int $webinar id of an existing Zoom webinar
 	 */
-	private function addParticipant($participant, $webinar) {
+	private function addParticipant($participant, $webinar, $triggerData) {
 		$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
 		$url = $settings['base_url'] . "/webinars/$webinar/registrants";
 		$token = $this->createJWTToken();
@@ -95,12 +98,18 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		if ($response->isOk()) {
 			$firstName = $participant['first_name'];
 			$lastName = $participant['last_name'];
+			$msg = 'Participant Added to Zoom. Webminar ID: '.$webinar;
+			$this->logAction($msg, $triggerData, \PSR\Log\LogLevel::INFO);
 
 			CRM_Core_Session::setStatus(
 				"$firstName $lastName was added to Zoom Webinar $webinar.",
 				ts('Participant added!'),
 				'success'
 			);
+		} else {
+			$result = $response->json();
+			$msg = $result['message'].' Webminar ID: '.$webinar;
+			$this->logAction($msg, $triggerData, \PSR\Log\LogLevel::ALERT);
 		}
 	}
 
