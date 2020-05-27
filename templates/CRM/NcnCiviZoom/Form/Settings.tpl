@@ -1,9 +1,5 @@
 {* HEADER *}
-
-<div class="crm-submit-buttons">
-{include file="CRM/common/formButtons.tpl" location="top"}
-</div>
-
+<div class="crm-block crm-form-block">
 {* FIELD EXAMPLE: OPTION 1 (AUTOMATIC LAYOUT) *}
 
 {foreach from=$elementNames item=elementName}
@@ -13,7 +9,7 @@
     {if $elementName == 'custom_field_id'}
       <span class="description">
       </br>
-      {ts}Please enter the field Id. Example: 48{/ts}
+      {ts}Select the event custom field which holds the Zoom Webminar ID{/ts}
     {/if}
     </div>
 
@@ -27,4 +23,5 @@
 {* FOOTER *}
 <div class="crm-submit-buttons">
 {include file="CRM/common/formButtons.tpl" location="bottom"}
+</div>
 </div>
