@@ -7,8 +7,8 @@
     <author>Rupert Amodia</author>
     <email>rupert@hellokrd.net</email>
   </maintainer>
-  <releaseDate>2020-05-21</releaseDate>
-  <version>0.1</version>
+  <releaseDate>2020-06-30</releaseDate>
+  <version>0.2</version>
   <requires>
     <ext>org.civicoop.civirules</ext>
   </requires>

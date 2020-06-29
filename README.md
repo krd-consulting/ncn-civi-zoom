@@ -13,5 +13,4 @@ After installing the extension navigate  to the zoom settings as 'Events->Zoom S
 ### Add to Zoom
 Must be paired with an `Event Participant` trigger.
 
-This action takes the Zoom Webinar ID from an event where a participant has just been added. In NCN's case, the Zoom Webinar ID
-is in the Custom Field Id which is entered in the Zoom Settings Page.
+This action takes the Zoom Webinar/Meeting ID from an event where a participant has just been added. In NCN's case, the Custom fields of Zoom Webinar ID and Zoom Meeting ID are selected in the Zoom Settings Page.
