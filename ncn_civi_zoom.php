@@ -195,6 +195,32 @@ function ncn_civi_zoom_civicrm_navigationMenu(&$menu) {
   );
 }
 
+function ncn_civi_zoom_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
+
+  if($formName == 'CRM_Event_Form_ManageEvent_EventInfo'){
+    $eventCustFields = CRM_NcnCiviZoom_Form_Settings::getEventCustomFields(TRUE);
+    $custFields = array();
+    foreach ($eventCustFields as $key => $value) {
+      foreach ($fields as $keys => $field) {
+        if(($keys == 'custom_'.$key.'_-1') || ($keys == 'custom_'.$key.'_1')){
+          //Retriving the submitted value of custom fields
+          $custFields[$keys] = $field;
+        }
+      }
+    }
+    //Checking whether more than one custom fields are entered
+    $count = 0;
+    foreach ($custFields as $key => $value) {
+      if(!empty($value)){
+        $count = $count + 1;
+      }
+      if($j>1){
+        $errors[$key] = ts('Please enter either webminar Id or Meeting Id, you cannot enter both');
+      }
+    }
+  }
+}
+
 /*
 function ncn_civi_zoom_civicrm_navigationMenu(&$menu) {
   _ncn_civi_zoom_civix_insert_navigation_menu($menu, 'Mailings', array(

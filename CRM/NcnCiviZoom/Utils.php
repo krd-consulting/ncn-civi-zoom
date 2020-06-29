@@ -19,4 +19,11 @@ class CRM_NcnCiviZoom_Utils {
 		$customField = (!empty($customId))? 'custom_'.$customId : NULL;
 		return $customField;
 	}
+
+	public static function getMeetingCustomField(){
+		$settings = self::getZoomSettings();
+		$customId = CRM_Utils_Array::value('custom_field_id_meeting', $settings, NULL);
+		$customField = (!empty($customId))? 'custom_'.$customId : NULL;
+		return $customField;
+	}
 }

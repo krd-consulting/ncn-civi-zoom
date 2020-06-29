@@ -31,6 +31,14 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
       TRUE,
       array('multiple' => FALSE)
     );
+    $this->add(
+      'select',
+      'custom_field_id_meeting',
+      'Custom Field For Meeting',
+      $this->getEventCustomFields(),
+      TRUE,
+      array('multiple' => FALSE)
+    );
 
     $buttons = [
       [
@@ -62,8 +70,11 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
   /**
    * @return array
    */
-  public static function getEventCustomFields() {
-    $cFields = array('' => '- select -');
+  public static function getEventCustomFields($validate = FALSE) {
+    $cFields = [];
+    if(!$validate){
+      $cFields = array('' => '- select -');
+    }
     $cGroupResult = civicrm_api3('CustomGroup', 'get', array(
       'sequential' => 1,
       'extends' => "Event",
@@ -102,6 +113,7 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
       $zoomSettings['secret_key']   = $values['secret_key'];
       $zoomSettings['base_url']     = $values['base_url'];
       $zoomSettings['custom_field_id'] = $values['custom_field_id'];
+      $zoomSettings['custom_field_id_meeting'] = $values['custom_field_id_meeting'];
       CRM_Core_BAO_Setting::setItem($zoomSettings, ZOOM_SETTINGS, 'zoom_settings');
       $result['message'] = ts('Your Settings have been saved');
       $result['type'] = 'success';

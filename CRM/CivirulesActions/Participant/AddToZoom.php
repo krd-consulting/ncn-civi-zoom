@@ -21,7 +21,13 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 	  $participant = $this->getContactData($contactId);
 
-	  $this->addParticipant($participant, $webinar, $triggerData);
+	  $meeting = $this->getMeetingID($event['id']);
+
+	  if(!empty($meeting)){
+	  	$this->addParticipant($participant, $meeting, $triggerData, 'Meeting');
+	  } elseif (!empty($webinar)) {
+	  	$this->addParticipant($participant, $webinar, $triggerData, 'Webminar');
+	  }
 	}
 
 	/**
@@ -32,6 +38,30 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 	private function getWebinarID($event) {
 		$result;
 		$customField = CRM_NcnCiviZoom_Utils::getCustomField();
+		try {
+			$apiResult = civicrm_api3('Event', 'get', [
+			  'sequential' => 1,
+			  'return' => [$customField],
+			  'id' => $event,
+			]);
+			// Remove any empty spaces
+			$result = trim($apiResult['values'][0][$customField]);
+			$result = str_replace(' ', '', $result);
+		} catch (Exception $e) {
+			throw $e;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get an event's Meeting id
+	 * @param  int $event The event's id
+	 * @return string The event's Meeting id
+	 */
+	private function getMeetingID($event) {
+		$result;
+		$customField = CRM_NcnCiviZoom_Utils::getMeetingCustomField();
 		try {
 			$apiResult = civicrm_api3('Event', 'get', [
 			  'sequential' => 1,
@@ -79,14 +109,19 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 
 	/**
 	 * Add's the given participant data as a single participant
-	 * to a Zoom Webinar with the given id.
+	 * to a Zoom Webinar/Meeting with the given id.
 	 *
 	 * @param array $participant participant data where email, first_name, and last_name are required
-	 * @param int $webinar id of an existing Zoom webinar
+	 * @param int $entityID id of an existing Zoom webinar/meeting
+	 * @param string $entity 'Meeting' or 'Webminar'
 	 */
-	private function addParticipant($participant, $webinar, $triggerData) {
+	private function addParticipant($participant, $entityID, $triggerData, $entity) {
 		$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
-		$url = $settings['base_url'] . "/webinars/$webinar/registrants";
+		if($entity == 'Webminar'){
+			$url = $settings['base_url'] . "/webinars/$entityID/registrants";
+		} elseif($entity == 'Meeting'){
+			$url = $settings['base_url'] . "/meetings/$entityID/registrants";
+		}
 		$token = $this->createJWTToken();
 
 		$response = Zttp::withHeaders([
@@ -98,17 +133,17 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		if ($response->isOk()) {
 			$firstName = $participant['first_name'];
 			$lastName = $participant['last_name'];
-			$msg = 'Participant Added to Zoom. Webminar ID: '.$webinar;
+			$msg = 'Participant Added to Zoom. $entity ID: '.$entityID;
 			$this->logAction($msg, $triggerData, \PSR\Log\LogLevel::INFO);
 
 			CRM_Core_Session::setStatus(
-				"$firstName $lastName was added to Zoom Webinar $webinar.",
+				"$firstName $lastName was added to Zoom $entity $entityID.",
 				ts('Participant added!'),
 				'success'
 			);
 		} else {
 			$result = $response->json();
-			$msg = $result['message'].' Webminar ID: '.$webinar;
+			$msg = $result['message'].' $entity ID: '.$entityID;
 			$this->logAction($msg, $triggerData, \PSR\Log\LogLevel::ALERT);
 		}
 	}
