@@ -214,7 +214,7 @@ function ncn_civi_zoom_civicrm_validateForm($formName, &$fields, &$files, &$form
       if(!empty($value)){
         $count = $count + 1;
       }
-      if($j>1){
+      if($count>1){
         $errors[$key] = ts('Please enter either webminar Id or Meeting Id, you cannot enter both');
       }
     }
