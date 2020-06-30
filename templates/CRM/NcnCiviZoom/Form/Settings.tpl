@@ -11,6 +11,11 @@
       </br>
       {ts}Select the event custom field which holds the Zoom Webminar ID{/ts}
     {/if}
+    {if $elementName == 'custom_field_id_meeting'}
+      <span class="description">
+      </br>
+      {ts}Select the event custom field which holds the Zoom Meeting ID{/ts}
+    {/if}
     </div>
 
 
