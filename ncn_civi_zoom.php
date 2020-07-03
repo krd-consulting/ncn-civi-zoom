@@ -198,19 +198,21 @@ function ncn_civi_zoom_civicrm_navigationMenu(&$menu) {
 function ncn_civi_zoom_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
 
   if($formName == 'CRM_Event_Form_ManageEvent_EventInfo'){
-    $eventCustFields = CRM_NcnCiviZoom_Form_Settings::getEventCustomFields(TRUE);
-    $custFields = array();
-    foreach ($eventCustFields as $key => $value) {
+    $customIds[] = CRM_NcnCiviZoom_Utils::getCustomField();
+    $customIds[] = CRM_NcnCiviZoom_Utils::getMeetingCustomField();
+    $submitValues = array();
+    foreach ($customIds as $key => $value) {
       foreach ($fields as $keys => $field) {
-        if(($keys == 'custom_'.$key.'_-1') || ($keys == 'custom_'.$key.'_1')){
+        $tempStr = substr($keys, 0, strlen($value));
+        if($tempStr == $value){
           //Retriving the submitted value of custom fields
-          $custFields[$keys] = $field;
+          $submitValues[$keys] = $field;
         }
       }
     }
     //Checking whether more than one custom fields are entered
     $count = 0;
-    foreach ($custFields as $key => $value) {
+    foreach ($submitValues as $key => $value) {
       if(!empty($value)){
         $count = $count + 1;
       }
