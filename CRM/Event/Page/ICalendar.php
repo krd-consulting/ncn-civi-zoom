@@ -58,6 +58,7 @@ class CRM_Event_Page_ICalendar extends CRM_Core_Page {
       $zoomObject->event_id = $info[0]['event_id'];
       $joinUrl = CRM_CivirulesActions_Participant_AddToZoom::getJoinUrl($zoomObject);
       if(!empty($joinUrl)){
+        $info[0]['description'] = "Zoom Join URL: ".$joinUrl."\n".$info[0]['description'];
         $info[0]['url'] = $joinUrl;
       }
     }
