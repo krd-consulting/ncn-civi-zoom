@@ -70,11 +70,8 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
   /**
    * @return array
    */
-  public static function getEventCustomFields($validate = FALSE) {
-    $cFields = [];
-    if(!$validate){
-      $cFields = array('' => '- select -');
-    }
+  public static function getEventCustomFields() {
+    $cFields = array('' => '- select -');
     $cGroupResult = civicrm_api3('CustomGroup', 'get', array(
       'sequential' => 1,
       'extends' => "Event",

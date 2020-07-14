@@ -160,6 +160,33 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		return $jwt;
 	}
 
+	public function getJoinUrl($object){
+		$eventId = $object->event_id;
+		$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
+		$webinar = $object->getWebinarID($eventId);
+		$meeting = $object->getMeetingID($eventId);
+		$url = '';
+		$eventType = '';
+	  if(!empty($meeting)){
+	  	$url = $settings['base_url'] . "/meetings/".$meeting;
+	  	$eventType = 'Meeting';
+	  } elseif (!empty($webinar)) {
+	  	$url = $settings['base_url'] . "/webinars/".$webinar;
+	  	$eventType = 'Webinar';
+	  } else {
+	  	return [null, null, null];
+	  }
+	  $token = $object->createJWTToken();
+		$response = Zttp::withHeaders([
+			'Content-Type' => 'application/json;charset=UTF-8',
+			'Authorization' => "Bearer $token"
+		])->get($url);
+		$result = $response->json();
+		$joinUrl = $result['join_url'];
+		$password = isset($result['password'])? $result['password'] : '';
+		return [$joinUrl, $password, $eventType];
+	}
+
 	/**
 	 * Method to return the url for additional form processing for action
 	 * and return false if none is needed
