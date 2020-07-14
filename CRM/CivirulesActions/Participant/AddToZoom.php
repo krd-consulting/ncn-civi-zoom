@@ -166,12 +166,15 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		$webinar = $object->getWebinarID($eventId);
 		$meeting = $object->getMeetingID($eventId);
 		$url = '';
+		$eventType = '';
 	  if(!empty($meeting)){
 	  	$url = $settings['base_url'] . "/meetings/".$meeting;
+	  	$eventType = 'Meeting';
 	  } elseif (!empty($webinar)) {
 	  	$url = $settings['base_url'] . "/webinars/".$webinar;
+	  	$eventType = 'Webinar';
 	  } else {
-	  	return null;
+	  	return [null, null, null];
 	  }
 	  $token = $object->createJWTToken();
 		$response = Zttp::withHeaders([
@@ -180,7 +183,8 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 		])->get($url);
 		$result = $response->json();
 		$joinUrl = $result['join_url'];
-		return empty($joinUrl)? NULL : $joinUrl;
+		$password = isset($result['password'])? $result['password'] : '';
+		return [$joinUrl, $password, $eventType];
 	}
 
 	/**
