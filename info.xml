@@ -8,7 +8,7 @@
     <email>rupert@hellokrd.net</email>
   </maintainer>
   <releaseDate>2020-06-30</releaseDate>
-  <version>0.2</version>
+  <version>1.0</version>
   <requires>
     <ext>org.civicoop.civirules</ext>
   </requires>
