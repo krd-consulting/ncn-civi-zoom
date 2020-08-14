@@ -11,58 +11,151 @@ use CRM_NcnCiviZoom_ExtensionUtil as E;
  * @see https://wiki.civicrm.org/confluence/display/CRMDOC/QuickForm+Reference
  */
 class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
+
+  public $_id = NULL;
+  public $_act = NULL;
+
+  public function preProcess() {
+    CRM_Utils_System::setTitle(ts("Zoom Settings"));
+    $this->_id = CRM_Utils_Request::retrieve('id', 'String', $this);
+    $this->_act = CRM_Utils_Request::retrieve('act', 'Positive', $this);
+    //setting the user context to zoom accounts list page
+    $session = CRM_Core_Session::singleton();
+    $session->pushUserContext(CRM_Utils_System::url('civicrm/Zoom/settings',"reset=1"));
+    parent::preProcess();
+  }
+
   public function buildQuickForm() {
-
-    // add form elements
-    $this->add('password', 'api_key', ts('Api Key'), array(
-      'size' => 48,
-    ), TRUE);
-    $this->add('password', 'secret_key', ts('Secret Key'), array(
-      'size' => 48,
-    ), TRUE);
-    $this->add('text', 'base_url', ts('Base Url'), array(
-      'size' => 48,
-    ), TRUE);
-    $this->add(
-      'select',
-      'custom_field_id',
-      'Custom Field',
-      $this->getEventCustomFields(),
-      TRUE,
-      array('multiple' => FALSE)
-    );
-    $this->add(
-      'select',
-      'custom_field_id_meeting',
-      'Custom Field For Meeting',
-      $this->getEventCustomFields(),
-      TRUE,
-      array('multiple' => FALSE)
-    );
-
-    $buttons = [
-      [
-        'type' => 'submit',
-        'name' => E::ts('Save'),
-        'isDefault' => TRUE,
-      ],
-    ];
-
-    // export form elements
-    $this->assign('elementNames', $this->getRenderableElementNames());
-
-    //Set default Values
-    $defaults = CRM_NcnCiviZoom_Utils::getZoomSettings();
-    if (!empty($defaults)) {
-      $buttons[] = [
-        'type' => 'upload',
-        'name' => ts('Test Settings'),
-        'subName' => 'done',
-      ];
+    $deleteAction = FALSE;
+    if ($this->_act & CRM_Core_Action::DELETE) {
+      $this->addButtons(array(
+        array(
+          'type' => 'submit',
+          'name' => E::ts("Delete"),
+          'isDefault' => TRUE,
+        ),
+        array(
+          'type' => 'cancel',
+          'name' => E::ts('Cancel'),
+        ),
+      ));
+      $deleteAccountDetails = CRM_NcnCiviZoom_Utils::getZoomAccountSettingsByIdOrName($this->_id);
+      $this->zoomName = $deleteAccountDetails['name'];
+      $this->assign('zoomName',$this->zoomName);
+      $deleteAction = TRUE;
+    }
+    else {
+      $this->addButtons(array(
+        array(
+          'type' => 'submit',
+          'name' => E::ts('Save'),
+          'isDefault' => TRUE,
+        ),
+        array(
+          'type' => 'cancel',
+          'name' => E::ts('Cancel'),
+        ),
+      ));
     }
 
-    $this->addButtons($buttons);
+    if($this->_act == 2 || $this->_act == 1){
+      if(($this->_act == 2) && !empty($this->_id)){
+        $zoomSettingsToEdit = CRM_NcnCiviZoom_Utils::getZoomAccountSettingsByIdOrName($this->_id);
+        $this->zoomName = $zoomSettingsToEdit['name'];
+        $this->assign('zoomName', $this->zoomName);
+      } else{
+        $this->zoomName = 'New';
+        $this->assign('zoomName', $this->zoomName);
+      }
+      $this->add('text', 'name', ts('Zoom Name'), array('size' => 48,), TRUE);
+      $this->add('password', 'api_key', ts('Api Key'), array(
+        'size' => 48,
+      ), TRUE);
+      $this->add('password', 'secret_key', ts('Secret Key'), array(
+        'size' => 48,
+      ), TRUE);
+      $testButton = array(
+        'type' => 'upload',
+        'name' => ts('Test Settings'),
+        'subName' => 'done'
+      );
+      $saveButton = array(
+        'type' => 'submit',
+        'name' => E::ts('Save'),
+        'isDefault' => TRUE
+      );
+      $cancelButton = array(
+        'type' => 'cancel',
+        'name' => E::ts('Cancel')
+      );
+      $buttons[] = $saveButton;
+      if(($this->_act == 2)){
+        $buttons[] = $testButton;
+      }
+      $buttons[] = $cancelButton;
+      $this->addButtons($buttons);
+    }
 
+    // add form elements
+    if(empty($this->_id) && empty($this->_act)){
+      $this->add('text', 'base_url', ts('Base Url'), array(
+        'size' => 48,
+      ), TRUE);
+      $this->add(
+        'select',
+        'custom_field_id_webinar',
+        'Custom Field for Webinar',
+        $this->getEventCustomFields(),
+        TRUE,
+        array('multiple' => FALSE)
+      );
+      $this->add(
+        'select',
+        'custom_field_id_meeting',
+        'Custom Field For Meeting',
+        $this->getEventCustomFields(),
+        TRUE,
+        array('multiple' => FALSE)
+      );
+      $this->add(
+        'select',
+        'custom_field_account_id',
+        'Custom Field For Zoom Account Id',
+        $this->getEventCustomFields(),
+        TRUE,
+        array('multiple' => FALSE)
+      );
+
+      $editAction = CRM_Core_Action::UPDATE;
+      $delAction = CRM_Core_Action::DELETE;
+      $addAction = CRM_Core_Action::ADD;
+      $rows = CRM_NcnCiviZoom_Utils::getAllZoomAccountSettings();
+      foreach ($rows as $Id => $values) {
+        if(strlen($values['api_key']) > 4){
+          $rows[$Id]['api_key'] = substr($values['api_key'], 0, 4).(str_repeat('*',strlen($values['api_key']) - 4));
+        }
+        if(strlen($values['secret_key']) > 4){
+          $rows[$Id]['secret_key'] = substr($values['secret_key'], 0, 4).(str_repeat('*',strlen($values['secret_key']) - 4));
+        }
+        if (!$deleteAction) {
+          $editURL = CRM_Utils_System::href('Edit', 'civicrm/Zoom/settings', 'reset=1&act='.$editAction.'&id='.$Id);
+          $deleteURL = CRM_Utils_System::href('Delete', 'civicrm/Zoom/settings', 'reset=1&act='.$delAction.'&id='.$Id);
+          $rows[$Id]['action'] = sprintf("<span>%s &nbsp;/&nbsp; %s</span>", $editURL, $deleteURL, $Id);
+        }
+      }
+    }
+
+    $headers = [ts('Id'), ts('Account Name'), ts('Api Key'), ts('Secret Key'), ts('Action')];
+    $columnNames = array('id', 'name', 'api_key', 'secret_key', 'action');
+    // export form elements
+    $defaults = CRM_NcnCiviZoom_Utils::getZoomSettings($this->_id);
+    $this->assign('act', $this->_act);
+    $this->assign('id', $this->_id);
+    $this->assign('deleteAction', $deleteAction);
+    $this->assign('headers',$headers);
+    if(!empty($rows)){$this->assign('rows',$rows);}
+    $this->assign('columnNames',$columnNames);
+    //Set default Values
     $this->setDefaults($defaults);
     parent::buildQuickForm();
   }
@@ -100,24 +193,73 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
   }
 
   public function postProcess() {
-
     $buttonName = $this->controller->getButtonName();
+    $values = $this->exportValues();
     if ($buttonName == $this->getButtonName('upload', 'done')) {
-      $result = self::testAPIConnectionSettings();
+      $result = self::testAPIConnectionSettings($this->_id);
+      $redirectUrl = CRM_Utils_System::url('civicrm/Zoom/settings', 'reset=1&act='.$this->_act."&id=".$this->_id);
     } else {
-      $values = $this->exportValues();
-      $zoomSettings['api_key']      = $values['api_key'];
-      $zoomSettings['secret_key']   = $values['secret_key'];
-      $zoomSettings['base_url']     = $values['base_url'];
-      $zoomSettings['custom_field_id'] = $values['custom_field_id'];
-      $zoomSettings['custom_field_id_meeting'] = $values['custom_field_id_meeting'];
-      CRM_Core_BAO_Setting::setItem($zoomSettings, ZOOM_SETTINGS, 'zoom_settings');
-      $result['message'] = ts('Your Settings have been saved');
-      $result['type'] = 'success';
+      $editAction = CRM_Core_Action::UPDATE;
+      $delAction = CRM_Core_Action::DELETE;
+      $addAction = CRM_Core_Action::ADD;
+
+      $tableName = CRM_NcnCiviZoom_Constants::ZOOM_ACCOUNT_SETTINGS;
+      if(($this->_act == $editAction) && !empty($this->_id)){
+        //Update the existing  settings
+        $api_key      = $values['api_key'];
+        $secret_key   = $values['secret_key'];
+        $zoom_name    = $values['name'];
+
+        $queryParams = array(
+          1 => array($zoom_name, 'String'),
+          2 => array($api_key, 'String'),
+          3 => array($secret_key, 'String'),
+          4 => array($this->_id, 'Integer')
+        );
+        $query = "UPDATE {$tableName} SET name = %1, api_key = %2, secret_key = %3 WHERE id = %4";
+        CRM_Core_Dao::executeQuery($query, $queryParams);
+
+        $result['message'] = ts('Zoom account settings have been updated');
+        $result['type'] = 'success';
+
+      } elseif (($this->_act == $addAction) && empty($this->_id)) {
+        // Add new zoom setting
+        $zoom_name = $values['name'];
+        $api_key      = $values['api_key'];
+        $secret_key   = $values['secret_key'];
+        $queryParams = array(
+          1 => array($zoom_name, 'String'),
+          2 => array($api_key, 'String'),
+          3 => array($secret_key, 'String'),
+        );
+        $query = "INSERT INTO {$tableName} (name, api_key, secret_key) VALUES (%1, %2 , %3)";
+        CRM_Core_Dao::executeQuery($query, $queryParams);
+        $result['message'] = ts('Your new zoom account settings have been saved');
+        $result['type'] = 'success';
+      }
+
+      //Delete the zoom setting
+      if(($this->_act == $delAction) && !empty($this->_id)){
+        $queryParams = array(1 => array($this->_id, 'Integer'));
+        $query = "DELETE FROM {$tableName} WHERE id=%1";
+        CRM_Core_Dao::executeQuery($query, $queryParams);
+        $result['message'] = ts($this->zoomName.' settings has been deleted');
+        $result['type'] = 'success';
+      }
+
+      if(empty($this->_act) && empty($this->_id)){
+        $zoomSettings['base_url']     = $values['base_url'];
+        $zoomSettings['custom_field_id_webinar'] = $values['custom_field_id_webinar'];
+        $zoomSettings['custom_field_id_meeting'] = $values['custom_field_id_meeting'];
+        $zoomSettings['custom_field_account_id'] = $values['custom_field_account_id'];
+        CRM_Core_BAO_Setting::setItem($zoomSettings, ZOOM_SETTINGS, 'zoom_settings');
+        $result['message'] = ts('Your Settings have been saved');
+        $result['type'] = 'success';
+      }
+      $redirectUrl    = CRM_Utils_System::url('civicrm/Zoom/settings', 'reset=1');
     }
 
     CRM_Core_Session::setStatus($result['message'], ts('Zoom Settings'), $result['type']);
-    $redirectUrl    = CRM_Utils_System::url('civicrm/Zoom/settings', 'reset=1');
     CRM_Utils_System::redirect($redirectUrl);
     parent::postProcess();
   }
@@ -143,10 +285,18 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
     return $elementNames;
   }
 
-  public static function testAPIConnectionSettings() {
-    $settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
+  public static function testAPIConnectionSettings($id = null) {
+    if(empty($id)){
+      $result = [
+        'message' => 'Parameters missing',
+        'type' => 'alert'
+      ];
+      return $result;
+    }
+    $settings = CRM_NcnCiviZoom_Utils::getZoomSettings($id);
+
     $url = $settings['base_url'] . "/report/daily";
-    $token = self::createJWTToken();
+    $token = self::createJWTToken($id);
     $params['year'] = date('Y');
     $params['month'] = date('m');
     $response = Zttp::withHeaders([
@@ -168,8 +318,11 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
     return $status;
   }
 
-  public static function createJWTToken() {
-    $settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
+  public static function createJWTToken($id = null) {
+    if(empty($id)){
+      return null;
+    }
+    $settings = CRM_NcnCiviZoom_Utils::getZoomSettings($id);
     $key = $settings['secret_key'];
     $payload = array(
         "iss" => $settings['api_key'],

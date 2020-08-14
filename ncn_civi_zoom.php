@@ -162,15 +162,6 @@ function ncn_civi_zoom_civicrm_themes(&$themes) {
 // --- Functions below this ship commented out. Uncomment as required. ---
 
 /**
- * Implements hook_civicrm_preProcess().
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_preProcess
- *
-function ncn_civi_zoom_civicrm_preProcess($formName, &$form) {
-
-} // */
-
-/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
@@ -197,41 +188,180 @@ function ncn_civi_zoom_civicrm_navigationMenu(&$menu) {
 
 function ncn_civi_zoom_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
 
-  if($formName == 'CRM_Event_Form_ManageEvent_EventInfo'){
-    $customIds[] = CRM_NcnCiviZoom_Utils::getCustomField();
-    $customIds[] = CRM_NcnCiviZoom_Utils::getMeetingCustomField();
+  if($formName == 'CRM_Event_Form_ManageEvent_EventInfo' && isset($form->_subType)){
+    $customIds['Webinar'] = CRM_NcnCiviZoom_Utils::getWebinarCustomField();
+    $customIds['Meeting'] = CRM_NcnCiviZoom_Utils::getMeetingCustomField();
+    $customFieldZoomAccount = CRM_NcnCiviZoom_Utils::getAccountIdCustomField();
     $submitValues = array();
     foreach ($customIds as $key => $value) {
       foreach ($fields as $keys => $field) {
         $tempStr = substr($keys, 0, strlen($value));
         if($tempStr == $value){
           //Retriving the submitted value of custom fields
-          $submitValues[$keys] = $field;
+          $submitValues[$key] = $field;
         }
       }
     }
     //Checking whether more than one custom fields are entered
     $count = 0;
+    $zoomEntity = NULL;
     foreach ($submitValues as $key => $value) {
       if(!empty($value)){
         $count = $count + 1;
+        //Custom field id is being stored for validating the meeting/webinar id
+        $zoomEntity = $key;
+        if(isset($fields['zoom_account_list']) && $fields['zoom_account_list'] == 0){
+          // Return error if the account id is empty
+          $errors['_qf_default'] = ts('Please select a zoom account id');
+        }
       }
       if($count>1){
         $errors['_qf_default'] = ts('Please enter either Webinar ID or Meeting ID, you cannot enter both');
       }
     }
+
+    //If the zoom account is selected but the custom fields(Webinar id or Meeting id) are empty
+    if(!empty($fields['zoom_account_list']) && $count == 0){
+      $errors['_qf_default'] = ts('Please enter either Webinar ID or Meeting ID');
+    }elseif (!empty($fields['zoom_account_list']) && $count == 1) {//Verifying the zoom event
+      $checkParams['account_id'] = $fields['zoom_account_list'];
+      $checkParams['entityID'] = $submitValues[$zoomEntity];
+      $checkParams['entity'] = $zoomEntity;
+      $result = CRM_CivirulesActions_Participant_AddToZoom::checkEventWithZoom($checkParams);
+      if(!$result['status']){
+        $errors['_qf_default'] = $result['message'];
+      }
+      //Validate the profile of the zoom event if it has online registration enabled
+      if(!empty($form->_id) && empty($errors)){
+        $isOnlineReg = CRM_Core_DAO::singleValueQuery("SELECT is_online_registration FROM civicrm_event WHERE id=".$form->_id);
+        if($isOnlineReg == 1){
+          $profileIds = $missingProfileFields = null;
+          try {
+            $apiResult = civicrm_api3('UFJoin', 'get', [
+              'sequential' => 1,
+              'return' => ["uf_group_id"],
+              'entity_id' => $form->_id,
+            ]);
+          } catch (Exception $e) {
+            CRM_Core_Error::debug_var('ncn_civi_zoom_civicrm_validateForm error', $e);
+          }
+          if(!empty($apiResult['values'])){
+            foreach ($apiResult['values'] as $key => $value){
+              $profileIds[] = $value['uf_group_id'];
+            }
+            if(!empty($profileIds)){
+              $checkFields = ['first_name', 'last_name', 'email'];
+              $missingProfileFields = CRM_NcnCiviZoom_Utils::checkRequiredProfilesForAnEvent($profileIds, $checkFields);
+
+            }
+          }
+          if(empty($profileIds) || !empty($missingProfileFields)){
+            // Error message if no profiles are selected or if the required fields are missing in the selected profiles
+            $errors['_qf_default'] = ts('Please select a profile having the fields - first_name, last_name and email. As they are required for zoom registration');
+          }
+        }
+      }
+    }
+  }
+
+  //Validate the profile of the zoom event if it has online registration enabled
+  if($formName == 'CRM_Event_Form_ManageEvent_Registration'){
+    if($fields['is_online_registration'] == 1){
+      if(!empty($form->_id)){
+        $eventId = $form->_id;
+        $accountId = CRM_NcnCiviZoom_Utils::getZoomAccountIdByEventId($eventId);
+        if(!empty($accountId)){
+          $profileIds = $missingProfileFields = [];
+          $requiredFields = ['first_name', 'last_name', 'email'];
+          $formProfileFields = ['custom_pre_id','custom_post_id','additional_custom_pre_id','additional_custom_post_id'];
+          foreach ($formProfileFields as $formProfileField) {
+            if(!empty($fields[$formProfileField])){
+              $profileIds[] = $fields[$formProfileField];
+            }
+          }
+
+          if(!empty($profileIds)){
+            $missingProfileFields = CRM_NcnCiviZoom_Utils::checkRequiredProfilesForAnEvent($profileIds, $requiredFields);
+          }
+          if(empty($profileIds) || !empty($missingProfileFields)){
+            // Error message if no profiles are selected or if the required fields are missing in the selected profiles
+            if(!empty($missingProfileFields)){
+              $errors['_qf_default'] = ts('Please select a profile having the fields - first_name, last_name and email. As they are required for zoom registration');
+            }
+          }
+        }
+      }
+    }
   }
 }
 
-/*
-function ncn_civi_zoom_civicrm_navigationMenu(&$menu) {
-  _ncn_civi_zoom_civix_insert_navigation_menu($menu, 'Mailings', array(
-    'label' => E::ts('New subliminal message'),
-    'name' => 'mailing_subliminal_message',
-    'url' => 'civicrm/mailing/subliminal',
-    'permission' => 'access CiviMail',
-    'operator' => 'OR',
-    'separator' => 0,
-  ));
-  _ncn_civi_zoom_civix_navigationMenu($menu);
-} // */
+/**
+ * Implements hook_civicrm_buildForm().
+ *
+ * Set a default value for an event price set field.
+ *
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
+function ncn_civi_zoom_civicrm_buildForm($formName, &$form) {
+
+  //Add the zoom account list to the form once the custom datatype is loaded
+  if($formName == 'CRM_Custom_Form_CustomDataByType'){
+    if($form->_cdType == 'Event' && $form->_type == 'Event'){
+      CRM_NcnCiviZoom_Utils::addZoomListToEventForm($form);
+      $templatePath = realpath(dirname(__FILE__)."/templates");
+      CRM_Core_Region::instance('page-body')->add(array(
+        'template' => "{$templatePath}/CRM/NcnCiviZoom/Event/Form/ManageEvent/Extra.tpl"
+      ));
+    }
+  }
+
+  //Add the zoom account list to the form once the form is loaded
+  if ($formName == 'CRM_Event_Form_ManageEvent_EventInfo') {
+    if(($form->getAction() == CRM_Core_Action::ADD)
+      || ($form->getAction() == CRM_Core_Action::UPDATE)) {
+
+      if(($form->getAction() == CRM_Core_Action::UPDATE) && ($form->controller->_QFResponseType != "json")){
+        return null;
+      }
+
+      CRM_NcnCiviZoom_Utils::addZoomListToEventForm($form);
+
+    }
+  }
+}
+
+/**
+ * Implements hook_civicrm_postProcess().
+ *
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
+function ncn_civi_zoom_civicrm_postProcess($formName, $form) {
+  if($formName == 'CRM_Event_Form_ManageEvent_EventInfo'){
+    $values = $form->exportValues();
+    $customFieldZoomAccount = CRM_NcnCiviZoom_Utils::getAccountIdCustomField();
+    if(isset($values['zoom_account_list']) && !empty($form->_id) && !empty($customFieldZoomAccount)){
+      try {
+        civicrm_api3('CustomValue', 'create', [
+          'entity_id' => $form->_id,
+          $customFieldZoomAccount => $values['zoom_account_list'],
+        ]);
+      } catch (Exception $e) {
+        CRM_Core_Error::debug_var('ncn_civi_zoom_civicrm_postProcess error', $e);
+      }
+    }
+  }
+}
+
+
+function ncn_civi_zoom_civicrm_pageRun(&$page) {
+  $pageName = $page->getVar('_name');
+  if ($pageName == 'CRM_Event_Page_EventInfo') {
+    $templatePath = realpath(dirname(__FILE__)."/templates");
+    //Including the tpl file to hide the custom fields displayed for an event
+    CRM_Core_Region::instance('page-body')->add(array(
+      'template' => "{$templatePath}/CRM/NcnCiviZoom/Event/Page/Extra.tpl"
+    ));
+  }
+}

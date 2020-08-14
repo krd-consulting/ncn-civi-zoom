@@ -17,6 +17,7 @@ use Zttp\Zttp;
  */
 function _civicrm_api3_participant_generatewebinarattendance_spec(&$spec) {
 	$spec['verification_token']['api.required'] = 1;
+	$spec['event_id']['api.required'] = 1;
 }
 
 /**
@@ -46,7 +47,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 		throw new \Civi\API\Exception\UnauthorizedException('Invalid verification token.');
 	}
 
-	$settings = CRM_NcnCiviZoom_Utils::getZoomSettings();
+	$settings = CRM_NcnCiviZoom_Utils::getZoomSettingsByEventId($params['event_id']);
 	$key = $settings['secret_key'];
 	$payload = array(
 	    "iss" => $settings['api_key'],
@@ -57,7 +58,7 @@ function civicrm_api3_event_generatewebinarattendance($params) {
 	// Get request body
 	$data = json_decode(file_get_contents('php://input'), true);
 	$webinar = $data['payload']['object']['id'];
-	$customField = CRM_NcnCiviZoom_Utils::getCustomField();
+	$customField = CRM_NcnCiviZoom_Utils::getWebinarCustomField();
 
 	$event = [];
 	if($customField)){
