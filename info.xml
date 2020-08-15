@@ -2,17 +2,17 @@
 <extension key="ncn-civi-zoom" type="module">
   <file>ncn_civi_zoom</file>
   <name>NCN Civirules Actions for Zoom</name>
-  <description>This module provides Civirules Actions for NCN that integrate with Zoom.</description>
+  <description>This module provides Civirules Zoom Actions for Events, including connecting CiviCRM to zoom.</description>
   <maintainer>
     <author>Rupert Amodia</author>
-    <email>rupert@hellokrd.net</email>
+    <email>hello@vedaconsulting.co.uk</email>
   </maintainer>
-  <releaseDate>2020-06-30</releaseDate>
+  <releaseDate>2020-08-15</releaseDate>
   <version>1.0</version>
   <requires>
     <ext>org.civicoop.civirules</ext>
   </requires>
-  <develStage>alpha</develStage>
+  <develStage>beta</develStage>
   <compatibility>
     <ver>5.0</ver>
   </compatibility>
