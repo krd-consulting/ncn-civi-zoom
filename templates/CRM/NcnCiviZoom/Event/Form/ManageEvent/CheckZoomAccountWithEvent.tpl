@@ -70,6 +70,10 @@ function checkEventZoom(msgboxid, count = 0){
    var zoomAccountId = $.trim($("#zoom_account_list").val());
    var webinarId = $.trim($("input[name^='{/literal}{$customIdWebinar}{literal}']").val());
    var meetingId = $.trim($("input[name^='{/literal}{$customIdMeeting}{literal}']").val());
+   webinarId = webinarId.replace(/\s/g,'');
+   meetingId = meetingId.replace(/\s/g,'');
+   $("input[name^='{/literal}{$customIdWebinar}{literal}']").val(webinarId);
+   $("input[name^='{/literal}{$customIdMeeting}{literal}']").val(meetingId);
 
    if((webinarId <= 0) && (meetingId <= 0)){
       if(zoomAccountId == 0){
