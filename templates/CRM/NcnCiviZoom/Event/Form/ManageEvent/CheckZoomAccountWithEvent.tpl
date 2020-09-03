@@ -45,6 +45,11 @@ $( document ).ajaxComplete(function(event, xhr, settings) {
       //change event for zoom account select
       $("#zoom_account_list").change(function(){
          var zoomAccountId = $.trim($("#zoom_account_list").val());
+         if(zoomAccountId > 0){
+            $("input[name^='{/literal}{$accountId}{literal}']").val(zoomAccountId);
+         }else{
+            $("input[name^='{/literal}{$accountId}{literal}']").val(null);
+         }
          var webinarId = $.trim($("input[name^='{/literal}{$customIdWebinar}{literal}']").val());
          var meetingId = $.trim($("input[name^='{/literal}{$customIdMeeting}{literal}']").val());
          if(meetingId>0){
