@@ -23,7 +23,7 @@ The JWT App within your Zoom account will allow you to connect CiviCRM to zoom, 
 * Create a JWT app in your zoom account's [zoom market place](https://marketplace.zoom.us/develop/create) page using the instructions given in [the guide](https://marketplace.zoom.us/docs/guides/build/jwt-app).
 * Keep a copy of the **API Key** and **API Secret Key** credentials, you'll need them to enter them into the CiviCRM Zoom settings
 
-### Configuring Zoom Settings
+### Signing into CiviCRM and configure the Zoom settings
 * Install the extension
 * Navigate  to the zoom settings as **Events >> Zoom Settings**. 
 * Create an entry for the zoom account (Note that the extension supports multiple Accounts)
