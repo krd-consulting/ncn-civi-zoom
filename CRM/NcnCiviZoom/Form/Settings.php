@@ -67,7 +67,7 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
         $this->zoomName = 'New';
         $this->assign('zoomName', $this->zoomName);
       }
-      $this->add('text', 'name', ts('Zoom Name'), array('size' => 48,), TRUE);
+      $this->add('text', 'name', ts('Account Name'), array('size' => 48,), TRUE);
       $this->add('password', 'api_key', ts('Api Key'), array(
         'size' => 48,
       ), TRUE);

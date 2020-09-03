@@ -10,16 +10,22 @@
 
 {if ($act eq 1) || ($act eq 2)}
   <h1>Enter {$zoomName} Settings</h1>
-  <div class="crm-section">
-    {$form.name.label}
-    {$form.name.html}
-    <br>
-    {$form.api_key.label}
-    {$form.api_key.html}
-    <br>
-    {$form.secret_key.label}
-    {$form.secret_key.html}
-  </div>
+  <table class="form-layout-compressed">
+    <tbody>
+      <tr class="custom_field-row">
+        <td class="label">{$form.name.label}</td>
+        <td class="">{$form.name.html}</td>
+      </tr>
+      <tr class="custom_field-row">
+        <td class="label">{$form.api_key.label}</td>
+        <td class="">{$form.api_key.html}</td>
+      </tr>
+      <tr class="custom_field-row">
+        <td class="label">{$form.secret_key.label}</td>
+        <td class="">{$form.secret_key.html}</td>
+      </tr>
+    </tbody>
+  </table>
 {else}
   <br>
   <br>

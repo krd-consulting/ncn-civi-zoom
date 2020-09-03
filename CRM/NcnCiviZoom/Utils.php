@@ -14,7 +14,7 @@ class CRM_NcnCiviZoom_Utils {
    */
   public static function getZoomSettings($id=null){
     $settings = CRM_Core_BAO_Setting::getItem(ZOOM_SETTINGS, 'zoom_settings');
-    if(!empty($id)){
+    if(!empty($id) && !empty($settings)){
       return array_merge($settings, self::getZoomAccountSettingsByIdOrName($id));
     } else{
       return $settings;

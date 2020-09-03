@@ -52,6 +52,8 @@ function ncn_civi_zoom_civicrm_install() {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
  */
 function ncn_civi_zoom_civicrm_postInstall() {
+  $settings['base_url'] = "https://api.zoom.us/v2";
+  CRM_Core_BAO_Setting::setItem($settings, ZOOM_SETTINGS, 'zoom_settings');
   _ncn_civi_zoom_civix_civicrm_postInstall();
 }
 
