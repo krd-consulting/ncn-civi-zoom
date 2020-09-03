@@ -23,7 +23,7 @@ The JWT App within your Zoom account will allow you to connect CiviCRM to zoom, 
 * Create a JWT app in your zoom account's [zoom market place](https://marketplace.zoom.us/develop/create) page using the instructions given in [the guide](https://marketplace.zoom.us/docs/guides/build/jwt-app).
 * Keep a copy of the **API Key** and **API Secret Key** credentials, you'll need them to enter them into the CiviCRM Zoom settings
 
-### Signing into CiviCRM and setup custom fields for Zoom
+### Sign into CiviCRM and setup custom fields for Zoom
 Create custom fields against the Event entity (you can select which types of events Zoom fields applicable too or leave blank for all events).
 Also note we would recommend turning off the public setting on the custom field group as you probably dont want the IDs being exposed publicly on information pages.
 The fields needed are
@@ -31,7 +31,7 @@ The fields needed are
 * Zoom Webinar ID. Will hold Zoom Webinar IDs
 * Zoom Meeting ID. Will hold the Zoom Meeting ID.
 
-### Signing into CiviCRM and configure the Zoom settings
+### Sign into CiviCRM and configure the Zoom settings
 * Install the extension
 * Navigate  to the zoom settings as **Events >> Zoom Settings**. 
 * Create an entry for the zoom account (Note that the extension supports multiple Accounts)
@@ -43,14 +43,15 @@ The fields needed are
 * Along with that you also need to enter the 'Base url' in the same settings page. Note the Base URL should be set to https://api.zoom.us/v2 if the extension doesn't automatically set it.
 ![Screenshot of add common zoom settings](images/add-common-zoom-settings.jpg)
 
-### Configuring an Event
-* Once the settings page has been created then you can see the configured zoom account ids list as drop down box just above the Webinar Id field , whenever you Add/Edit an event as below.
-* Once you've selected a zoom account and entered a Webinar Id / Meeting Id your webinar/meeting id will be verified with the selected zoom account along with a message next to the text box as below.
-![Screenshot of event configuration](images/event-configuration.jpg)
-
-## Actions
-### Add to Zoom
+### Configure CiviRules to Add to Zoom
 * Must be paired with an `Event Participant` trigger and the linked conditions shall be the required custom fields such as Webinar Id / Meeting Id and the zoom account Id should not be empty.
 * And the action for this rule should be as 'Add Participant to Zoom'.
 
 This action takes the Zoom Webinar/Meeting ID and Zoom account ID from an event where a participant has just been added.
+
+## Enabling the integration for a CiviEvent
+### Configure the CiviEvent
+* Once the settings page has been created then you can see the configured zoom account ids list as drop down box just above the Webinar Id field , whenever you Add/Edit an event as below.
+* Once you've selected a zoom account and entered a Webinar Id / Meeting Id your webinar/meeting id will be verified with the selected zoom account along with a message next to the text box as below.
+![Screenshot of event configuration](images/event-configuration.jpg)
+
