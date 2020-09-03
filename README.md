@@ -3,6 +3,9 @@
 # ncn-civi-zoom
 Civirules Conditions/Actions that talk with Zoom developed for NCN.
 
+# what it does
+This extension will connect CiviEvents with Zoom, allowing registrations for zoom events to be captured in your CiviCRM install via your website. This has a multitude of benefits, including GDPR compliance, using Zooms workflow, removing the need to manually export/import as well as being able to manage events in the same way you would any other CiviCRM events.
+
 ## Requirements
 
 * PHP v7.0+
@@ -13,14 +16,17 @@ Civirules Conditions/Actions that talk with Zoom developed for NCN.
 * Install the extension in CiviCRM. More details [here](https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/#installing-a-new-extension) about installing extensions in CiviCRM.
 
 ## Setup
-### Creating a JWT App
+### Sign into Zoom and Create a JWT App
+
+The JWT App within your Zoom account will allow you to connect CiviCRM to zoom, so that it can pass over participant information.
+
 * Create a JWT app in your zoom account's [zoom market place](https://marketplace.zoom.us/develop/create) page using the instructions given in [the guide](https://marketplace.zoom.us/docs/guides/build/jwt-app).
-* You need to copy the **API Key** and **Client Secret** credentials and paste them in the Zoom settings page.
-* Instructions to configure the zoom settings page are given below.
+* Keep a copy of the **API Key** and **API Secret Key** credentials, you'll need them to enter them into the CiviCRM Zoom settings
 
 ### Configuring Zoom Settings
-* After installing the extension navigate  to the zoom settings as **Events >> Zoom Settings**. Where you can add multiple zoom accounts' details such as api_keys and secret_keys and also you can name each of them for your Identification. You can edit/delete any of these settings at anytime.
-* You need to add atleast 1 Zoom Account ID to add a zoom event and register the participant(s) for it.
+* Install the extension
+* Navigate  to the zoom settings as **Events >> Zoom Settings**. 
+* Create an entry for the zoom account (Note that the extension supports multiple Accounts)
 * The Zoom Account ID will be used to indicate that the event belongs to a particular Zoom Account.
 ![Screenshot of add new zoom account button](images/add-new-zoom-account.jpg)
 
