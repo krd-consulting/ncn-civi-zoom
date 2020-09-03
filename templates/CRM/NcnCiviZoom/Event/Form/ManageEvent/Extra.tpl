@@ -17,14 +17,12 @@
 CRM.$(function($) {
    var customIdWeb = $('{/literal}{$customIdWebinar}{literal}');
    var customIdMeet = $('{/literal}{$customIdMeeting}{literal}');
-   console.log(customIdWeb.selector);
-   console.log(customIdMeet.selector);
 
 		$( document ).ajaxComplete(function(event, xhr, settings) {
 			var Url = settings.url;
 			if (Url.indexOf("custom") >= 0) {
 				$("#zoom_account_list_full").css({"margin-left":"30px" , "width": "300px"});
-				$("#zoom_account_list_full").insertBefore($("input[name^='{/literal}{$customIdWebinar}{literal}']").parent().parent());
+				$("#zoom_account_list_full").insertBefore($("input[name^='{/literal}{$accountId}{literal}']").parent().parent());
 
 				//Adding message box to webinar custom field
 				$("<span id='msgbox_webinar' style='display:none'></span>").insertAfter($("input[name^='{/literal}{$customIdWebinar}{literal}']"));

@@ -141,12 +141,22 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
           $editURL = CRM_Utils_System::href('Edit', 'civicrm/Zoom/settings', 'reset=1&act='.$editAction.'&id='.$Id);
           $deleteURL = CRM_Utils_System::href('Delete', 'civicrm/Zoom/settings', 'reset=1&act='.$delAction.'&id='.$Id);
           $rows[$Id]['action'] = sprintf("<span>%s &nbsp;/&nbsp; %s</span>", $editURL, $deleteURL, $Id);
+          $testResult = self::testAPIConnectionSettings($Id);
+          $ext = 'ncn-civi-zoom';
+          if($testResult['type'] == 'success'){
+            $file = 'images/connected.png';
+            $imageUrl = CRM_Core_Resources::singleton()->getUrl($ext, $file);
+          }else{
+            $file = 'images/notConnected.png';
+            $imageUrl = CRM_Core_Resources::singleton()->getUrl($ext, $file);
+          }
+          $rows[$Id]['connected'] = "<img height='16' width='16' src=".$imageUrl." />";
         }
       }
     }
 
-    $headers = [ts('Id'), ts('Account Name'), ts('Api Key'), ts('Secret Key'), ts('Action')];
-    $columnNames = array('id', 'name', 'api_key', 'secret_key', 'action');
+    $headers = [ts('Id'), ts('Account Name'), ts('Api Key'), ts('Secret Key'), ts('Action'), ts('Connected')];
+    $columnNames = array('id', 'name', 'api_key', 'secret_key', 'action', 'connected');
     // export form elements
     $defaults = CRM_NcnCiviZoom_Utils::getZoomSettings($this->_id);
     $this->assign('act', $this->_act);
@@ -294,6 +304,13 @@ class CRM_NcnCiviZoom_Form_Settings extends CRM_Core_Form {
       return $result;
     }
     $settings = CRM_NcnCiviZoom_Utils::getZoomSettings($id);
+    if(empty($settings['base_url'])){
+      $result = [
+        'message' => 'Base url is missing',
+        'type' => 'alert'
+      ];
+      return $result;
+    }
 
     $url = $settings['base_url'] . "/report/daily";
     $token = self::createJWTToken($id);

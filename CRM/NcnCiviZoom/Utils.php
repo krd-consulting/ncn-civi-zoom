@@ -185,10 +185,12 @@ class CRM_NcnCiviZoom_Utils {
       array('multiple' => FALSE, 'id' => 'zoom_account_list')
     );
 
-    $customIds['Webinar'] = CRM_NcnCiviZoom_Utils::getWebinarCustomField();
-    $customIds['Meeting'] = CRM_NcnCiviZoom_Utils::getMeetingCustomField();
+    $customIds['Webinar'] = self::getWebinarCustomField();
+    $customIds['Meeting'] = self::getMeetingCustomField();
+    $customFieldZoomAccount = self::getAccountIdCustomField();
     $form->assign('customIdWebinar',$customIds['Webinar'].'_');
     $form->assign('customIdMeeting',$customIds['Meeting'].'_');
+    $form->assign('accountId',$customFieldZoomAccount.'_');
     $eventId = null;
     if(!empty($form->_id)){
       $eventId = $form->_id;
@@ -196,7 +198,6 @@ class CRM_NcnCiviZoom_Utils {
       $eventId = $form->_entityId;
     }
     if(!empty($eventId)){
-      $customFieldZoomAccount = CRM_NcnCiviZoom_Utils::getAccountIdCustomField();
       if(($form->getAction() == CRM_Core_Action::UPDATE) && !empty($customFieldZoomAccount)){
         try {
           $apiResult = civicrm_api3('CustomValue', 'get', [
