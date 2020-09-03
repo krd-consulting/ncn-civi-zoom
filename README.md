@@ -3,7 +3,7 @@
 # ncn-civi-zoom
 Civirules Conditions/Actions that talk with Zoom developed for NCN.
 
-# what it does
+# What it does
 This extension will connect CiviEvents with Zoom, allowing registrations for zoom events to be captured in your CiviCRM install via your website. This has a multitude of benefits, including GDPR compliance, using Zooms workflow, removing the need to manually export/import as well as being able to manage events in the same way you would any other CiviCRM events.
 
 ## Requirements
@@ -43,11 +43,12 @@ The fields needed are
 * Along with that you also need to enter the 'Base url' in the same settings page. Note the Base URL should be set to https://api.zoom.us/v2 if the extension doesn't automatically set it.
 ![Screenshot of add common zoom settings](images/add-common-zoom-settings.jpg)
 
-### Configure CiviRules to Add to Zoom
-* Must be paired with an `Event Participant` trigger and the linked conditions shall be the required custom fields such as Webinar Id / Meeting Id and the zoom account Id should not be empty.
-* And the action for this rule should be as 'Add Participant to Zoom'.
+### Configure CiviRules to send participant information to Zoom
+In order to pass the details over to Zoom the extension creates a new rule action "Add Participant to Zoom". The action uses the zoom details set on the event the participant has registered for and uses that to determine which event, if any, to register them into Zoom. What you will need to do is determine how long a delay, if any, you want before the participant is pushed to zoom. 
 
-This action takes the Zoom Webinar/Meeting ID and Zoom account ID from an event where a participant has just been added.
+Once you've decided this you can create a new CiviRule as per the screen shot.
+
+
 
 ## Enabling the integration for a CiviEvent
 ### Configure the CiviEvent
