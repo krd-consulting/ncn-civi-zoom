@@ -39,9 +39,12 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'return' => [$customField],
 			  'id' => $event,
 			]);
-			// Remove any empty spaces
-			$result = trim($apiResult['values'][0][$customField]);
-			$result = str_replace(' ', '', $result);
+			$result = null;
+			if(!empty($apiResult['values'][0][$customField])){
+				// Remove any empty spaces
+				$result = trim($apiResult['values'][0][$customField]);
+				$result = str_replace(' ', '', $result);
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}
@@ -63,9 +66,12 @@ class CRM_CivirulesActions_Participant_AddToZoom extends CRM_Civirules_Action{
 			  'return' => [$customField],
 			  'id' => $event,
 			]);
-			// Remove any empty spaces
-			$result = trim($apiResult['values'][0][$customField]);
-			$result = str_replace(' ', '', $result);
+			$result = null;
+			if(!empty($apiResult['values'][0][$customField])){
+				// Remove any empty spaces
+				$result = trim($apiResult['values'][0][$customField]);
+				$result = str_replace(' ', '', $result);
+			}
 		} catch (Exception $e) {
 			throw $e;
 		}

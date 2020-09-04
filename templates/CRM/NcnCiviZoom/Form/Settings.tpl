@@ -50,11 +50,7 @@
             {foreach from=$rows item=row}
               <tr>
                 {foreach from=$columnNames item=columnName}
-                  {if ($columnName eq 'connected')}
-                    <td class='center'>{$row.$columnName}</td>
-                  {else}
-                    <td>{$row.$columnName}</td>
-                  {/if}
+                  <td>{$row.$columnName}</td>
                 {/foreach}
               </tr>
             {/foreach}
