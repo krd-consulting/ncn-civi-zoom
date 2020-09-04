@@ -13,13 +13,11 @@ This extension will connect CiviEvents with Zoom, allowing registrations for zoo
 * CiviRules extension
 
 ## Installation
-* Install the extension in CiviCRM. More details [here](https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/#installing-a-new-extension) about installing extensions in CiviCRM.
-
-Once Installed, follow the Setup guide below, the key steps are;
+Follow the Setup guide below, the key steps are;
 
 * Create a connector in Zoom (JWT App)
 * Create relevant custom fields in CiviCRM for Events to hold zoom information
-* Install the CiviCRM Zoom Extension
+* Install the CiviCRM Zoom Extension. More details [here](https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/#installing-a-new-extension) about installing extensions in CiviCRM.
 * Connect CiviCRM to Zoom via settings
 
 Following this you will then have the option, per event, to pass information over to zoom on registration of participants, either online or offline.
@@ -41,6 +39,10 @@ The fields needed are
 * Zoom Account ID. As the extension supports multiple zoom accounts in a single installation this field will store which zoom account the meeting or webinar is for.
 * Zoom Webinar ID. Will hold Zoom Webinar IDs
 * Zoom Meeting ID. Will hold the Zoom Meeting ID.
+
+### Sign into CiviCRM and install the CiviCRM Zoom extension
+
+More details [here](https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/#installing-a-new-extension) about installing extensions in CiviCRM.
 
 ### Sign into CiviCRM and configure the Zoom settings
 * Install the extension
