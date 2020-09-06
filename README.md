@@ -13,6 +13,9 @@ This extension will connect CiviEvents with Zoom, allowing registrations for zoo
 * CiviRules extension
 
 ## Installation
+
+A helper Youtube installation video can be found [here](https://youtu.be/6rta9V3J7yc)
+
 Follow the Setup guide below, the key steps are;
 
 * Create a connector in Zoom (JWT App)
